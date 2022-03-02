@@ -1,6 +1,6 @@
 import { Button, Typography } from '@mui/material'
 import { GetServerSideProps } from 'next'
-import CustomBtn from '../components/CustomBtn'
+import SignInBtn from '../components/CustomBtn'
 
 const TestPage: React.FC = () => {
   return (
@@ -9,7 +9,7 @@ const TestPage: React.FC = () => {
       <Button type='button' variant='contained'>
         Server Side Rendered Button
       </Button>
-      <CustomBtn>kekwwwww</CustomBtn>
+      <SignInBtn>kekwwwww</SignInBtn>
     </>
   )
 }
