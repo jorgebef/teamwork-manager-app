@@ -165,7 +165,9 @@ const NavBar = () => {
           ) : (
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title='Sign In'>
-                  <SignInBtn setAuth={setAuth} text='KEKWWWWWW'>Sign In</SignInBtn>
+                <SignInBtn setAuth={setAuth} text='KEKWWWWWW'>
+                  Sign In
+                </SignInBtn>
               </Tooltip>
             </Box>
           )}
