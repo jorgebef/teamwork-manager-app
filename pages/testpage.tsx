@@ -9,7 +9,6 @@ const TestPage: React.FC = () => {
       <Button type='button' variant='contained'>
         Server Side Rendered Button
       </Button>
-      <SignInBtn>kekwwwww</SignInBtn>
     </>
   )
 }

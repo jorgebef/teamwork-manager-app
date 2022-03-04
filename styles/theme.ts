@@ -5,13 +5,13 @@ import { Theme } from '@mui/system'
 const theme: Theme = createTheme({
   palette: {
     primary: {
-      main: '#556cd6',
+      main: '#55acd6',
     },
     secondary: {
       main: '#19857b',
     },
     error: {
-      main: red.A700,
+      main: red.A400,
     },
   },
 })
