@@ -14,6 +14,13 @@ const theme: Theme = createTheme({
       main: red.A400,
     },
   },
+  components: {
+    MuiButton: {
+      defaultProps: {
+        disableElevation: true,
+      },
+    },
+  },
 })
 
 export default theme
