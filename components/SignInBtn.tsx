@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import { Button } from '@mui/material'
+import { useAuthCtx } from '../context/AuthCtx'
 
 interface IButtonProps {
   backgroundColor?: string
@@ -17,15 +18,9 @@ const Btn = styled.button<IButtonProps>`
   }
 `
 
-interface IStyledEmotionButtonProps {
-  text?: string
-  setAuth: React.Dispatch<React.SetStateAction<boolean>>
-}
+const SignInBtn: React.FC = ({ children }) => {
+  const { setAuth } = useAuthCtx()
 
-const SignInBtn: React.FC<IStyledEmotionButtonProps> = ({
-  setAuth,
-  children,
-}) => {
   return (
     <Button
       sx={
