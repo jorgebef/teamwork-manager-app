@@ -1,7 +1,6 @@
 import React from 'react'
 import { useAuthCtx } from '../../context/AuthCtx'
-import PermanentDrawer from './PermanentDrawer'
-import TempDrawer from './TempDrawer'
+import { PermanentDrawer, TempDrawer } from './Drawers'
 
 const CustomDrawer: React.FC = () => {
   const { auth } = useAuthCtx()
