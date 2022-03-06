@@ -1,6 +1,5 @@
 import { Button, Typography } from '@mui/material'
 import { GetServerSideProps } from 'next'
-import SignInBtn from '../components/CustomBtn'
 
 const TestPage: React.FC = () => {
   return (
