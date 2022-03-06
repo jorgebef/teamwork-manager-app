@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState } from 'react'
 export interface IDrawerCtx {
   open: boolean
   // setOpen: (c: boolean) => void
-  setOpen: React.Dispatch<React.SetState<boolean>>
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export const DrawerCtx = createContext<IDrawerCtx>({

@@ -3,7 +3,6 @@ import {
   AppBar,
   Avatar,
   Box,
-  Button,
   Container,
   Divider,
   IconButton,
@@ -14,19 +13,11 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import MenuIcon from '@mui/icons-material/Menu'
-import { Logout, Settings } from '@mui/icons-material'
+import { Logout } from '@mui/icons-material'
 import Link from 'next/link'
 import SignInBtn from '../SignInBtn'
 import DrawerToggleBtn from '../CustomDrawer/DrawerToggleBtn'
 import { useAuthCtx } from '../../context/AuthCtx'
-
-const pages = [
-  { title: 'Products', path: '/products' },
-  { title: 'Pricing', path: '/pricing' },
-  { title: 'Blog', path: '/blog' },
-  { title: 'Test Page', path: '/testpage' },
-]
 
 const NavBar: React.FC = () => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
