@@ -4,6 +4,7 @@ import { useDrawerCtx } from '../../context/DrawerCtx'
 import { useAuthCtx } from '../../context/AuthCtx'
 import toggleDrawer from './toggleDrawer'
 import { CloseRounded } from '@mui/icons-material'
+import {useRouter} from 'next/router'
 
 const DrawerToggleBtn = () => {
   const { auth } = useAuthCtx()
@@ -11,7 +12,7 @@ const DrawerToggleBtn = () => {
 
   return (
     <Box
-      sx={{ flexGrow: 0, display: auth ? { xs: 'flex', md: 'none' } : 'none' }}
+      sx={{ flexGrow: 0, display: auth && useRouter().asPath!=='/'? { xs: 'flex', md: 'none' } : 'none' }}
     >
       <IconButton
         size='large'

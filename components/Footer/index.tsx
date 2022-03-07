@@ -1,19 +1,23 @@
-import { Box } from '@mui/material'
-import React from 'react'
+import { Box } from "@mui/material";
+import React from "react";
 
 const Footer = () => {
   return (
-    <Box
-      sx={{
-        backgroundColor: t => t.palette.grey[200],
-        // zIndex: t => t.zIndex.drawer + 3,
-        justifyContent: 'center',
-        width: '100%',
-      }}
-    >
-      <footer>Footer goes here</footer>
-    </Box>
-  )
-}
+    <footer>
+      <Box
+        sx={{
+          backgroundColor: (t) => t.palette.grey[200],
+          zIndex: (t) => t.zIndex.drawer,
+          justifyContent: "center",
+          width: "100%",
+          position: "relative",
+          bottom: 0
+        }}
+      >
+        Footer goasdfasdfes here
+      </Box>
+    </footer>
+  );
+};
 
-export default Footer
+export default Footer;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from "react";
 import {
   AppBar,
   Avatar,
@@ -11,57 +11,57 @@ import {
   MenuItem,
   Toolbar,
   Tooltip,
-  Typography,
-} from '@mui/material'
-import { Logout } from '@mui/icons-material'
-import Link from 'next/link'
-import SignInBtn from '../SignInBtn'
-import DrawerToggleBtn from '../CustomDrawer/DrawerToggleBtn'
-import { useAuthCtx } from '../../context/AuthCtx'
+  Typography
+} from "@mui/material";
+import { Logout } from "@mui/icons-material";
+import Link from "next/link";
+import SignInBtn from "../SignInBtn";
+import DrawerToggleBtn from "../CustomDrawer/DrawerToggleBtn";
+import { useAuthCtx } from "../../context/AuthCtx";
 
 const NavBar: React.FC = () => {
-  const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
-  const { auth, setAuth } = useAuthCtx()
+  const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+  const { auth, setAuth } = useAuthCtx();
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget)
-  }
+    setAnchorElUser(event.currentTarget);
+  };
 
   const handleCloseUserMenu = () => {
-    setAnchorElUser(null)
-  }
+    setAnchorElUser(null);
+  };
 
   const handleSignOut = () => {
-    setAnchorElUser(null)
-    setAuth(false)
-  }
+    setAnchorElUser(null);
+    setAuth(false);
+  };
 
   return (
     <AppBar
-      position='fixed'
+      position="fixed"
       elevation={0}
-      sx={{ zIndex: theme => theme.zIndex.drawer + 1 }}
+      sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
     >
-      <Container maxWidth='xl'>
+      <Container maxWidth="xl">
         <Toolbar
-          variant='regular'
-          sx={{ justifyContent: 'space-between' }}
+          variant="regular"
+          sx={{ justifyContent: "space-between" }}
           disableGutters
         >
           <Box
-            sx={{ flexGrow: 0, display: 'flex', alignItems: 'center', gap: 3 }}
+            sx={{ flexGrow: 0, display: "flex", alignItems: "center", gap: 3 }}
           >
             <DrawerToggleBtn />
 
-            <Link href='/' passHref>
+            <Link href="/" passHref>
               <Typography
-                variant='h6'
+                variant="h6"
                 noWrap
-                component='div'
+                component="div"
                 sx={{
                   mr: 2,
-                  cursor: 'pointer',
-                  display: 'flex',
+                  cursor: "pointer",
+                  display: "flex"
                 }}
               >
                 LOGO
@@ -71,10 +71,10 @@ const NavBar: React.FC = () => {
 
           {auth ? (
             <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title='Account'>
+              <Tooltip title="Account">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <Avatar
-                    alt='Remy Sharp'
+                    alt="Remy Sharp"
                     // src='/static/images/avatar/2.jpg'
                   />
                 </IconButton>
@@ -82,42 +82,44 @@ const NavBar: React.FC = () => {
               <Menu
                 sx={{
                   mt: 6,
-                  '& .MuiAvatar-root': {
+                  "& .MuiAvatar-root": {
                     width: 32,
                     height: 32,
                     ml: -0.5,
-                    mr: 1,
-                  },
+                    mr: 1
+                  }
                 }}
-                id='menu-appbar'
+                id="menu-appbar"
                 anchorEl={anchorElUser}
                 anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
+                  vertical: "top",
+                  horizontal: "right"
                 }}
                 keepMounted
                 transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
+                  vertical: "top",
+                  horizontal: "right"
                 }}
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-                <MenuItem key={'dashboard'} onClick={handleCloseUserMenu}>
-                  <Avatar /> Dashboard
-                </MenuItem>
+                <Link href="/teams" passHref>
+                  <MenuItem key={"dashboard"} onClick={handleCloseUserMenu}>
+                    <Avatar /> Dashboard
+                  </MenuItem>
+                </Link>
                 <Divider />
-                <MenuItem key={'signout'} onClick={handleSignOut}>
+                <MenuItem key={"signout"} onClick={handleSignOut}>
                   <ListItemIcon>
-                    <Logout fontSize='small' color='error' />
+                    <Logout fontSize="small" color="error" />
                   </ListItemIcon>
-                  <Typography textAlign='center'>Sign Out</Typography>
+                  <Typography textAlign="center">Sign Out</Typography>
                 </MenuItem>
               </Menu>
             </Box>
           ) : (
             <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title='Sign In'>
+              <Tooltip title="Sign In">
                 <SignInBtn>Sign In</SignInBtn>
               </Tooltip>
             </Box>
@@ -125,7 +127,7 @@ const NavBar: React.FC = () => {
         </Toolbar>
       </Container>
     </AppBar>
-  )
-}
+  );
+};
 
-export default NavBar
+export default NavBar;
