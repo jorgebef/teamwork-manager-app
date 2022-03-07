@@ -1,6 +1,8 @@
-import type { NextPage } from 'next'
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import type { NextPage } from "next";
+import Head from "next/head";
+import React from "react";
+import Footer from "../components/Footer";
+import styles from "../styles/Home.module.css";
 
 const Home: NextPage = () => {
   return (
@@ -8,35 +10,34 @@ const Home: NextPage = () => {
       <Head>
         <title>Teamwork Manager - Home</title>
         <meta
-          name='description'
-          content='Team project and task management app'
+          name="description"
+          content="Team project and task management app"
         />
-        <link rel='icon' href='/favicon.ico' />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
-
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Welcome to <a href='https://nextjs.org'>Next.js!</a>
+          Welcome to <a href="https://nextjs.org">Next.js!</a>
         </h1>
 
         <p className={styles.description}>
-          Get started by editing{' '}
+          Get started by editing{" "}
           <code className={styles.code}>pages/index.tsx</code>
         </p>
 
         <div className={styles.grid}>
-          <a href='https://nextjs.org/docs' className={styles.card}>
+          <a href="https://nextjs.org/docs" className={styles.card}>
             <h2>Documentation &rarr;</h2>
             <p>Find in-depth information about Next.js features and API.</p>
           </a>
 
-          <a href='https://nextjs.org/learn' className={styles.card}>
+          <a href="https://nextjs.org/learn" className={styles.card}>
             <h2>Learn &rarr;</h2>
             <p>Learn about Next.js in an interactive course with quizzes!</p>
           </a>
 
           <a
-            href='https://github.com/vercel/next.js/tree/canary/examples'
+            href="https://github.com/vercel/next.js/tree/canary/examples"
             className={styles.card}
           >
             <h2>Examples &rarr;</h2>
@@ -44,7 +45,7 @@ const Home: NextPage = () => {
           </a>
 
           <a
-            href='https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app'
+            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
             className={styles.card}
           >
             <h2>Deploy &rarr;</h2>
@@ -55,7 +56,7 @@ const Home: NextPage = () => {
         </div>
       </main>
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;

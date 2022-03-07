@@ -1,14 +1,38 @@
-import { Box, Container } from '@mui/material'
-import CustomDrawer from '../CustomDrawer'
-import { DrawerCtxProvider } from '../../context/DrawerCtx'
-import NavBar from '../NavBar'
-import Footer from '../Footer'
+import { Box, Container } from "@mui/material";
+import CustomDrawer from "../CustomDrawer";
+import { DrawerCtxProvider } from "../../context/DrawerCtx";
+import NavBar from "../NavBar";
+import Footer from "../Footer";
+import { useRouter } from "next/router";
 
 type LayoutProps = {
-  children: React.ReactNode
-}
+  children: React.ReactNode;
+};
 
 const Layout = ({ children }: LayoutProps) => {
+  const router = useRouter();
+
+  if (router.asPath === "/") {
+    return (
+      <>
+        <DrawerCtxProvider>
+          <NavBar />
+          <Container
+            sx={{
+              pt: 10,
+              display: "flex",
+              justifyContent: "center",
+              minHeight: "100vh",
+              boxSizing: "border-box"
+            }}
+          >
+            {children}
+          </Container>
+          <Footer />
+        </DrawerCtxProvider>
+      </>
+    );
+  }
   return (
     <>
       <DrawerCtxProvider>
@@ -16,23 +40,26 @@ const Layout = ({ children }: LayoutProps) => {
         <Container
           sx={{
             pt: 10,
-            display: 'flex',
-            alignItems: 'flex-start',
-            justifyContent: 'center',
-            minHeight: '100vh',
-            boxSizing: 'border-box',
+            display: "flex",
+            justifyContent: "center",
+            minHeight: "100vh",
+            boxSizing: "border-box"
           }}
         >
           <CustomDrawer />
-          {children}
+          <Container
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              boxSizing: "border-box"
+            }}
+          >
+            {children}
+          </Container>
         </Container>
-
-        {/* Footer is not appearing on top of the Container above!!!! */}
-        <Footer />
-        {/* Footer is not appearing on top of the Container above!!!! */}
       </DrawerCtxProvider>
     </>
-  )
-}
+  );
+};
 
-export default Layout
+export default Layout;
