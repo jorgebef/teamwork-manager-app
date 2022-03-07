@@ -30,7 +30,7 @@ type LinkListItemT = {
 const linkList: LinkListItemT[] = [
   {
     title: "Teams",
-    path: "/testpage",
+    path: "/teams",
     icon: <GroupsRounded />
   },
   {
