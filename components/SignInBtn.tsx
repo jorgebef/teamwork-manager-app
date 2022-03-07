@@ -21,6 +21,10 @@ const Btn = styled.button<IButtonProps>`
 const SignInBtn: React.FC = ({ children }) => {
   const { setAuth } = useAuthCtx()
 
+  const handleSignIn = async () => {
+    setAuth(true)
+  }
+
   return (
     <Button
       sx={
@@ -34,7 +38,7 @@ const SignInBtn: React.FC = ({ children }) => {
       color='success'
       type='button'
       variant='contained'
-      onClick={() => setAuth(true)}
+      onClick={handleSignIn}
     >
       {children}
     </Button>
