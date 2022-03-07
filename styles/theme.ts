@@ -21,6 +21,11 @@ const theme: Theme = createTheme({
       },
     },
   },
+  typography: {
+    h3: {
+      fontWeight: 500,
+    },
+  },
 })
 
 export default theme
