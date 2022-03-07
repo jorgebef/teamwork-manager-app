@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   AppBar,
   Avatar,
@@ -18,10 +18,17 @@ import Link from "next/link";
 import SignInBtn from "../SignInBtn";
 import DrawerToggleBtn from "../CustomDrawer/DrawerToggleBtn";
 import { useAuthCtx } from "../../context/AuthCtx";
+import { useRouter } from "next/router";
 
 const NavBar: React.FC = () => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const { auth, setAuth } = useAuthCtx();
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!auth) return
+    router.push('/dashboard')
+  }, [auth])
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -35,6 +42,7 @@ const NavBar: React.FC = () => {
     setAnchorElUser(null);
     setAuth(false);
   };
+
 
   return (
     <AppBar
@@ -103,7 +111,7 @@ const NavBar: React.FC = () => {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-                <Link href="/teams" passHref>
+                <Link href="/dashboard" passHref>
                   <MenuItem key={"dashboard"} onClick={handleCloseUserMenu}>
                     <Avatar /> Dashboard
                   </MenuItem>
