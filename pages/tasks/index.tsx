@@ -42,6 +42,7 @@ export default function ControlledAccordions() {
       {taskList.map(task => {
         return (
           <Accordion
+            key={task.id}
             expanded={expanded === task.id}
             onChange={handleChange(task.id)}
             elevation={0}
