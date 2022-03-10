@@ -22,6 +22,7 @@ import moment from 'moment'
 import { styled } from '@mui/system'
 import Image from 'next/image'
 import profile2 from '../public/profile1.jpg'
+import TaskForm from './TaskForm'
 
 interface ITaskListProps {
   tasks: ITask[]
@@ -29,7 +30,12 @@ interface ITaskListProps {
 
 const TaskList = ({ tasks }: ITaskListProps) => {
   const [expanded, setExpanded] = useState<string | false>(false)
+  const [open, setOpen] = useState(false)
   const theme = useTheme()
+
+  const handleOpen = () => {
+    setOpen(true)
+  }
 
   const handleChange =
     (panel: string) => (e: React.SyntheticEvent, isExpanded: boolean) => {
@@ -71,7 +77,16 @@ const TaskList = ({ tasks }: ITaskListProps) => {
                 {task.title}
               </Typography>
             </AccordionSummary>
-            <AccordionDetails>
+            <AccordionDetails
+              sx={{
+                '&:hover': {
+                  // Buttons will appear once the expanded accordion is hovered
+                  '& Button': {
+                    opacity: 1,
+                  },
+                },
+              }}
+            >
               <Box
                 sx={{
                   display: 'flex',
@@ -103,11 +118,14 @@ const TaskList = ({ tasks }: ITaskListProps) => {
                     alignSelf: 'flex-end',
                   }}
                 >
+                  {/* <TaskForm task={task} /> */}
                   <Button
                     color='primary'
+                    onClick={handleOpen}
                     type='button'
                     variant='contained'
                     startIcon={<EditRounded />}
+                    sx={{ opacity: 0 }}
                   >
                     Edit
                   </Button>
@@ -116,12 +134,14 @@ const TaskList = ({ tasks }: ITaskListProps) => {
                     type='button'
                     variant='contained'
                     startIcon={<DeleteRounded />}
+                    sx={{ opacity: 0 }}
                   >
                     Delete
                   </Button>
                 </Box>
               </Box>
             </AccordionDetails>
+            <TaskForm task={task} open={open} setOpen={setOpen} />
           </Accordion>
         )
       })}
