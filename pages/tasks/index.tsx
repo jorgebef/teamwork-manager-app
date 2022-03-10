@@ -1,105 +1,44 @@
-import * as React from 'react'
-import Accordion from '@mui/material/Accordion'
-import AccordionDetails from '@mui/material/AccordionDetails'
-import AccordionSummary from '@mui/material/AccordionSummary'
-import Typography from '@mui/material/Typography'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import { Box, Button, Container, Divider, useTheme } from '@mui/material'
-import { DeleteRounded, EditRounded } from '@mui/icons-material'
+import { useEffect, useState } from 'react'
+import {
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+  QuerySnapshot,
+} from 'firebase/firestore'
+import { db } from '../../util/firebase'
+import { ITask } from '../../util/types'
+import TaskList from '../../components/TaskList'
 
-const taskList = [
-  {
-    id: 1,
-    title: 'task1',
-    desc: 'lorem ipsum lore bla bla bla bla.',
-    asigneeUID: 'uuid92304920',
-    created: Date.now(),
-    dueDate: Date.now(),
-    parentProjectId: 1,
-  },
-  {
-    id: 2,
-    title: 'task2',
-    desc: 'Task 2 description bla bla bla bla bla',
-    asigneeUID: 2,
-    created: Date.now(),
-    dueDate: Date.now(),
-    parentProjectId: 2,
-  },
-]
+const Tasks = () => {
+  const [tasks, setTasks] = useState<ITask[]>([])
 
-export default function ControlledAccordions() {
-  const [expanded, setExpanded] = React.useState<number | false>(false)
-  const theme = useTheme()
+  useEffect(() => {
+    const collectionRef = collection(db, 'tasks')
 
-  const handleChange =
-    (panel: number) => (event: React.SyntheticEvent, isExpanded: boolean) => {
-      setExpanded(isExpanded ? panel : false)
-    }
+    // const q = query(collectionRef)
+    const q = query(collectionRef, orderBy('dueDate', 'desc'))
 
-  return (
-    <Container>
-      {taskList.map(task => {
-        return (
-          <Accordion
-            key={task.id}
-            expanded={expanded === task.id}
-            onChange={handleChange(task.id)}
-            elevation={0}
-            sx={{
-              backgroundColor:
-                expanded === task.id ? theme.palette.grey[100] : null,
-              // my: 2
-            }}
-          >
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls='panel1bh-content'
-              id='panel1bh-header'
-            >
-              <Typography variant='h6' sx={{ width: '33%', flexShrink: 0 }}>
-                {task.title}
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'flex-start',
-                }}
-              >
-                <Typography>{task.desc}</Typography>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    gap: 1,
-                    justifySelf: 'flex-end',
-                    alignSelf: 'flex-end',
-                  }}
-                >
-                  <Button
-                    color='primary'
-                    type='button'
-                    variant='contained'
-                    startIcon={<EditRounded />}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    color='error'
-                    type='button'
-                    variant='contained'
-                    startIcon={<DeleteRounded />}
-                  >
-                    Delete
-                  </Button>
-                </Box>
-              </Box>
-            </AccordionDetails>
-          </Accordion>
-        )
-      })}
-    </Container>
-  )
+    const unsubscribe = onSnapshot(q, QuerySnapshot => {
+      setTasks(
+        QuerySnapshot.docs.map<ITask>(doc => ({
+          ...doc.data(),
+          id: doc.id,
+          title: doc.data().title,
+          description: doc.data().description,
+          asignee: doc.data().asignee,
+          parentProject: doc.data().parentProject,
+          createdAt: doc.data().createdAt.toDate().getTime(),
+          modifiedAt: doc.data().modifiedAt.toDate().getTime(),
+          dueDate: doc.data().dueDate.toDate().getTime(),
+        }))
+      )
+    })
+
+    return unsubscribe
+  }, [])
+
+  return <TaskList tasks={tasks} />
 }
+
+export default Tasks
