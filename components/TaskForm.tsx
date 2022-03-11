@@ -34,31 +34,48 @@ const TaskForm = ({ task, open, setOpen }: ITaskProps) => {
   }
 
   return (
-      <Modal
-        // hideBackdrop
-        open={open}
-        onClose={handleClose}
-        // onBackdropClick={()=>null}
-        aria-labelledby='child-modal-title'
-        aria-describedby='child-modal-description'
+    <Modal
+      // hideBackdrop
+      open={open}
+      onClose={handleClose}
+      // onBackdropClick={()=>null}
+      aria-labelledby='child-modal-title'
+      aria-describedby='child-modal-description'
+    >
+      <Box
+        sx={{
+          position: 'absolute' as 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          bgcolor: 'background.paper',
+          p: 4,
+        }}
       >
-        <Box
-          sx={{
-            position: 'absolute' as 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            bgcolor: 'background.paper',
-            p: 4,
-          }}
-        >
-          <Typography>{task.title}</Typography>
-          <p id='child-modal-description'>
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-          </p>
-          <Button onClick={handleClose}>Close Child Modal</Button>
+        <Typography>{task.title}</Typography>
+        <p id='child-modal-description'>
+          Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+        </p>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Button
+            color='error'
+            type='button'
+            variant='contained'
+            onClick={handleClose}
+          >
+            Discard
+          </Button>
+          <Button
+            color='primary'
+            type='button'
+            variant='contained'
+            // onClick={handleSubmit}
+          >
+            Discard
+          </Button>
         </Box>
-      </Modal>
+      </Box>
+    </Modal>
   )
 }
 
