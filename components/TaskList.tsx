@@ -9,6 +9,10 @@ import {
   Button,
   Container,
   Divider,
+  IconButton,
+  ListItemIcon,
+  Menu,
+  MenuItem,
   useTheme,
 } from '@mui/material'
 import {
@@ -16,8 +20,10 @@ import {
   DeleteRounded,
   EditRounded,
   FlagRounded,
+  MoreHorizRounded,
+  RemoveRounded,
 } from '@mui/icons-material'
-import { ITask } from '../util/types'
+import { TaskWithId, ITask } from '../util/types'
 import moment from 'moment'
 import { styled } from '@mui/system'
 import Image from 'next/image'
@@ -25,31 +31,51 @@ import profile2 from '../public/profile1.jpg'
 import TaskForm from './TaskForm'
 
 interface ITaskListProps {
-  tasks: ITask[]
+  tasks: TaskWithId[]
 }
 
 const TaskList = ({ tasks }: ITaskListProps) => {
   const [expanded, setExpanded] = useState<string | false>(false)
-  const [open, setOpen] = useState(false)
+  const [modalEdit, setModalEdit] = useState(false)
+  // const [modalCreate, setModalCreate] = useState(false)
   const [taskEdit, setTaskEdit] = useState<ITask | null>(null)
+  const [optsMenuEl, setOptsMenuEl] = useState<HTMLElement | null>(null)
   const theme = useTheme()
 
-  const handleOpen = (task: ITask) => {
-    setTaskEdit(task)
-    setOpen(true)
-  }
-
-  const handleExpand =
+  const handleExpandTask =
     (panel: string) => (e: React.SyntheticEvent, isExpanded: boolean) => {
+      // Disable closing the Accordion by clicking the Sumary only when open
+      // force the user to use the closing arrow
+      // This way we can implement the MoreHorizRounded icon for editing and deleting
+      if (expanded === e.currentTarget.id) return
       setExpanded(isExpanded ? panel : false)
     }
 
-  const handleClose = (e: React.SyntheticEvent, reason?: string) => {
+  const handleUnexpandTask = () => {
+    setExpanded(false)
+  }
+
+  const handleCloseEditModal = (e: React.SyntheticEvent, reason?: string) => {
     // Here we handle the case were we click on the backdrop
     // by having a conditional prop "reason", we can use this
     // function both in onClose and onClick
     if (reason === 'backdropClick') return
-    setOpen(false)
+    setModalEdit(false)
+  }
+
+  const handleOpenEditModal = (task: ITask) => {
+    console.log(task.modifiedAt)
+    setOptsMenuEl(null)
+    setTaskEdit(task)
+    setModalEdit(true)
+  }
+
+  const handleCloseOpts = () => {
+    setOptsMenuEl(null)
+  }
+
+  const handleOpenOpts = (e: React.MouseEvent<HTMLElement>) => {
+    setOptsMenuEl(e.currentTarget)
   }
 
   const CustomRow = styled(Box)({
@@ -61,104 +87,137 @@ const TaskList = ({ tasks }: ITaskListProps) => {
 
   return (
     <Container>
-      {tasks.map(task => {
+      {tasks.map((task: TaskWithId) => {
         return (
-          <Accordion
-            key={task.id}
-            expanded={expanded === task.id}
-            onChange={handleExpand(task.id)}
-            elevation={0}
-            sx={{
-              backgroundColor:
-                expanded === task.id ? theme.palette.grey[100] : null,
-              // my: 2
-            }}
-          >
-            <AccordionSummary
-              expandIcon={<ExpandMoreRounded />}
-              aria-controls='panel1bh-content'
-              id='panel1bh-header'
-            >
-              <Typography
-                noWrap={expanded === task.id ? false : true}
-                variant='h5'
-                sx={{ width: '33%', flexShrink: 0 }}
-              >
-                {task.title}
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails
+          <>
+            <Accordion
+              key={task.id}
+              expanded={expanded === task.id}
+              onChange={handleExpandTask(task.id)}
+              elevation={0}
               sx={{
-                '&:hover': {
-                  // Buttons will appear once the expanded accordion is hovered
-                  '& Button': {
-                    opacity: 1,
-                  },
-                },
+                backgroundColor:
+                  expanded === task.id ? theme.palette.grey[100] : null,
               }}
             >
-              <Box
+              <AccordionSummary
+                id={task.id}
+                expandIcon={
+                  <IconButton onClick={handleUnexpandTask}>
+                    <ExpandMoreRounded />
+                  </IconButton>
+                }
+                aria-controls='panel1bh-content'
                 sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'flex-start',
+                  cursor: expanded === task.id ? 'default !important' : 'auto',
                 }}
               >
-                <Typography fontWeight={400}>{task.description}</Typography>
+                <Typography
+                  noWrap={expanded === task.id ? false : true}
+                  fontSize={18}
+                  fontWeight={500}
+                  sx={{ width: '100%', alignSelf: 'center' }}
+                >
+                  {task.title}
+                </Typography>
 
-                <CustomRow>
-                  <FlagRounded color='warning' />
-                  <Typography fontWeight={700}>
-                    {moment(task.dueDate).format('MMM do, yyyy')}
-                  </Typography>
-                </CustomRow>
-
-                <CustomRow>
-                  <Avatar sx={{ width: 35, height: 35 }}>
-                    <Image alt='user1' src={profile2} quality={20} />
-                  </Avatar>
-                  <Typography fontWeight={700}>{task.asignee}</Typography>
-                </CustomRow>
+                {/* <IconButton */}
+                {/*   onClick={handleOpenOpts} */}
+                {/*   sx={{ */}
+                {/*     display: expanded === task.id ? 'flex' : 'none', */}
+                {/*     mr: 1, */}
+                {/*   }} */}
+                {/* > */}
+                {/*   <MoreHorizRounded /> */}
+                {/* </IconButton> */}
 
                 <Box
                   sx={{
-                    display: 'flex',
+                    display: expanded === task.id ? 'flex' : 'none',
                     gap: 1,
-                    justifySelf: 'flex-end',
-                    alignSelf: 'flex-end',
+                    mr: 1,
                   }}
                 >
-                  {/* <TaskForm task={task} /> */}
-                  <Button
-                    color='primary'
-                    onClick={() => handleOpen(task)}
-                    type='button'
-                    variant='contained'
-                    startIcon={<EditRounded />}
-                    sx={{ opacity: 0 }}
+                  <IconButton
+                    aria-label='Edit'
+                    onClick={() => handleOpenEditModal(task)}
                   >
-                    Edit
-                  </Button>
-                  <Button
-                    color='error'
-                    type='button'
-                    variant='contained'
-                    startIcon={<DeleteRounded />}
-                    sx={{ opacity: 0 }}
+                    <EditRounded />
+                  </IconButton>
+                  <IconButton
+                    aria-label='Delete'
+                    // onClick={() => handleOpenEditModal(task)}
                   >
-                    Delete
-                  </Button>
+                    <DeleteRounded color='error' />
+                  </IconButton>
                 </Box>
-              </Box>
-            </AccordionDetails>
-            <TaskForm
-              taskEdit={taskEdit}
-              open={open}
-              handleClose={handleClose}
-            />
-          </Accordion>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'flex-start',
+                  }}
+                >
+                  <Typography fontWeight={400}>{task.description}</Typography>
+
+                  <CustomRow>
+                    <FlagRounded color='warning' />
+                    <Typography fontWeight={500}>
+                      {moment(task.dueDate).format('MMM Do, YYYY')}
+                    </Typography>
+                  </CustomRow>
+
+                  <CustomRow>
+                    <Avatar sx={{ width: 35, height: 35 }}>
+                      <Image alt='user1' src={profile2} quality={20} />
+                    </Avatar>
+                    <Typography fontWeight={500}>{task.asignee}</Typography>
+                  </CustomRow>
+                </Box>
+              </AccordionDetails>
+            </Accordion>
+
+            <Menu
+              id={task.id + '-menu'}
+              anchorEl={optsMenuEl}
+              open={Boolean(optsMenuEl)}
+              onClose={handleCloseOpts}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              keepMounted
+            >
+              <MenuItem onClick={() => handleOpenEditModal(task)}>
+                <ListItemIcon>
+                  <EditRounded fontSize='small' />
+                </ListItemIcon>
+                Edit
+              </MenuItem>
+              <Divider />
+              <MenuItem>
+                <ListItemIcon>
+                  <DeleteRounded color='error' fontSize='small' />
+                </ListItemIcon>
+                Delete
+              </MenuItem>
+            </Menu>
+          </>
         )
       })}
+
+      <TaskForm
+        taskEdit={taskEdit}
+        open={modalEdit}
+        handleClose={handleCloseEditModal}
+      />
+
     </Container>
   )
 }
