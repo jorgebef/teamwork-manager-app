@@ -31,16 +31,26 @@ interface ITaskListProps {
 const TaskList = ({ tasks }: ITaskListProps) => {
   const [expanded, setExpanded] = useState<string | false>(false)
   const [open, setOpen] = useState(false)
+  const [taskEdit, setTaskEdit] = useState<ITask | null>(null)
   const theme = useTheme()
 
-  const handleOpen = () => {
+  const handleOpen = (task: ITask) => {
+    setTaskEdit(task)
     setOpen(true)
   }
 
-  const handleChange =
+  const handleExpand =
     (panel: string) => (e: React.SyntheticEvent, isExpanded: boolean) => {
       setExpanded(isExpanded ? panel : false)
     }
+
+  const handleClose = (e: React.SyntheticEvent, reason?: string) => {
+    // Here we handle the case were we click on the backdrop
+    // by having a conditional prop "reason", we can use this
+    // function both in onClose and onClick
+    if (reason === 'backdropClick') return
+    setOpen(false)
+  }
 
   const CustomRow = styled(Box)({
     display: 'flex',
@@ -56,7 +66,7 @@ const TaskList = ({ tasks }: ITaskListProps) => {
           <Accordion
             key={task.id}
             expanded={expanded === task.id}
-            onChange={handleChange(task.id)}
+            onChange={handleExpand(task.id)}
             elevation={0}
             sx={{
               backgroundColor:
@@ -121,7 +131,7 @@ const TaskList = ({ tasks }: ITaskListProps) => {
                   {/* <TaskForm task={task} /> */}
                   <Button
                     color='primary'
-                    onClick={handleOpen}
+                    onClick={() => handleOpen(task)}
                     type='button'
                     variant='contained'
                     startIcon={<EditRounded />}
@@ -141,7 +151,11 @@ const TaskList = ({ tasks }: ITaskListProps) => {
                 </Box>
               </Box>
             </AccordionDetails>
-            <TaskForm task={task} open={open} setOpen={setOpen} />
+            <TaskForm
+              taskEdit={taskEdit}
+              open={open}
+              handleClose={handleClose}
+            />
           </Accordion>
         )
       })}
