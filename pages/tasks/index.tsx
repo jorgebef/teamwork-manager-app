@@ -7,11 +7,11 @@ import {
   QuerySnapshot,
 } from 'firebase/firestore'
 import { db } from '../../util/firebase'
-import { ITask } from '../../util/types'
+import { TaskWithId, ITask } from '../../util/types'
 import TaskList from '../../components/TaskList'
 
 const Tasks = () => {
-  const [tasks, setTasks] = useState<ITask[]>([])
+  const [tasks, setTasks] = useState<TaskWithId[]>([])
 
   useEffect(() => {
     const collectionRef = collection(db, 'tasks')
@@ -21,16 +21,19 @@ const Tasks = () => {
 
     const unsubscribe = onSnapshot(q, QuerySnapshot => {
       setTasks(
-        QuerySnapshot.docs.map<ITask>(doc => ({
+        QuerySnapshot.docs.map<TaskWithId>(doc => ({
           ...doc.data(),
           id: doc.id,
           title: doc.data().title,
           description: doc.data().description,
           asignee: doc.data().asignee,
           parentProject: doc.data().parentProject,
-          createdAt: doc.data().createdAt.toDate().getTime(),
-          modifiedAt: doc.data().modifiedAt.toDate().getTime(),
-          dueDate: doc.data().dueDate.toDate().getTime(),
+          // createdAt: doc.data().createdAt.toDate().getTime(),
+          // modifiedAt: doc.data().modifiedAt.toDate().getTime(),
+          // dueDate: doc.data().dueDate.toDate().getTime(),
+          createdAt: doc.data().createdAt,
+          modifiedAt: doc.data().modifiedAt,
+          dueDate: doc.data().dueDate,
         }))
       )
     })
