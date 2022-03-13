@@ -20,6 +20,11 @@ const theme: Theme = createTheme({
         disableElevation: true,
       },
     },
+    MuiMenu: {
+      defaultProps: {
+        elevation: 1,
+      },
+    },
   },
   typography: {
     h3: {
