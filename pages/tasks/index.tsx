@@ -6,7 +6,7 @@ import {
   query,
   QuerySnapshot,
 } from 'firebase/firestore'
-import { db } from '../../util/firebase'
+import { db } from '../../firebase/config'
 import { TaskWithId, ITask } from '../../util/types'
 import TaskList from '../../components/TaskList'
 
@@ -27,7 +27,7 @@ const Tasks = () => {
           title: doc.data().title,
           description: doc.data().description,
           asignee: doc.data().asignee,
-          parentProject: doc.data().parentProject,
+          parent: doc.data().parentProject,
           // createdAt: doc.data().createdAt.toDate().getTime(),
           // modifiedAt: doc.data().modifiedAt.toDate().getTime(),
           // dueDate: doc.data().dueDate.toDate().getTime(),
@@ -41,7 +41,9 @@ const Tasks = () => {
     return unsubscribe
   }, [])
 
-  return <TaskList tasks={tasks} />
+  return (
+      <TaskList tasks={tasks} />
+  )
 }
 
 export default Tasks
