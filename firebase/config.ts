@@ -8,13 +8,13 @@ import { getFirestore } from 'firebase/firestore'
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: 'AIzaSyDqa1oD7sJ4PZimRnssXKzaCGzlSd_gapw',
-  authDomain: 'teamwork-manager-app.firebaseapp.com',
-  projectId: 'teamwork-manager-app',
-  storageBucket: 'teamwork-manager-app.appspot.com',
-  messagingSenderId: '991996102934',
-  appId: '1:991996102934:web:48fdbb20f938ce6b416837',
-  measurementId: 'G-GH1MJL9CKR',
+  apiKey: process.env.NEXT_PUBLIC_APIKEY,
+  authDomain: process.env.NEXT_PUBLIC_AUTHDOMAIN,
+  projectId: process.env.NEXT_PUBLIC_PROJECTID,
+  storageBucket: process.env.NEXT_PUBLIC_STORAGEBUCKED,
+  messagingSenderId: process.env.NEXT_PUBLIC_MESSAGINGSENDERID,
+  appId: process.env.NEXT_PUBLIC_APPID,
+  measurementId: process.env.NEXT_PUBLIC_MEASUREMENTID,
 }
 
 // Initialize Firebase

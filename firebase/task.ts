@@ -3,10 +3,9 @@ import {
   collection,
   deleteDoc,
   doc,
-  Firestore,
   serverTimestamp,
 } from 'firebase/firestore'
-import { ITask, TaskWithId } from '../util/types'
+import { ITask } from '../util/types'
 import { db } from './config'
 
 export const createTask = async (task: ITask | null) => {
