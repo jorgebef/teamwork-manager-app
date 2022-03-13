@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react'
+import {  useState } from 'react'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import Typography from '@mui/material/Typography'
 import {
+  AlertColor,
   Avatar,
   Box,
   Button,
@@ -13,6 +14,8 @@ import {
   ListItemIcon,
   Menu,
   MenuItem,
+  Modal,
+  // Snackbar,
   useTheme,
 } from '@mui/material'
 import {
@@ -20,8 +23,7 @@ import {
   DeleteRounded,
   EditRounded,
   FlagRounded,
-  MoreHorizRounded,
-  RemoveRounded,
+  // MoreHorizRounded,
 } from '@mui/icons-material'
 import { TaskWithId, ITask } from '../util/types'
 import moment from 'moment'
@@ -29,6 +31,9 @@ import { styled } from '@mui/system'
 import Image from 'next/image'
 import profile2 from '../public/profile1.jpg'
 import TaskForm from './TaskForm'
+import { useAlertCtx } from '../context/AlertCtx'
+import AlertCustom from './Alert'
+import { deleteTask } from '../firebase/task'
 
 interface ITaskListProps {
   tasks: TaskWithId[]
@@ -36,11 +41,14 @@ interface ITaskListProps {
 
 const TaskList = ({ tasks }: ITaskListProps) => {
   const [expanded, setExpanded] = useState<string | false>(false)
-  const [modalEdit, setModalEdit] = useState(false)
+  const [taskFormModal, setTaskFormModal] = useState<boolean>(false)
+  const [taskDelModal, setTaskDelModal] = useState<boolean>(false)
   // const [modalCreate, setModalCreate] = useState(false)
-  const [taskEdit, setTaskEdit] = useState<ITask | null>(null)
+  const [taskAction, setTaskAction] = useState<'create' | 'edit'>('edit')
+  const [taskEdit, setTaskEdit] = useState<TaskWithId | null>(null)
   const [optsMenuEl, setOptsMenuEl] = useState<HTMLElement | null>(null)
   const theme = useTheme()
+  const { setAlertOpen, setAlertType, setAlertMsg } = useAlertCtx()
 
   const handleExpandTask =
     (panel: string) => (e: React.SyntheticEvent, isExpanded: boolean) => {
@@ -55,19 +63,37 @@ const TaskList = ({ tasks }: ITaskListProps) => {
     setExpanded(false)
   }
 
-  const handleCloseEditModal = (e: React.SyntheticEvent, reason?: string) => {
+  const handleCloseFormModal = (e: React.SyntheticEvent, reason?: string) => {
     // Here we handle the case were we click on the backdrop
     // by having a conditional prop "reason", we can use this
     // function both in onClose and onClick
     if (reason === 'backdropClick') return
-    setModalEdit(false)
+    setTaskFormModal(false)
   }
 
-  const handleOpenEditModal = (task: ITask) => {
+  const handleOpenDelModal = (task: TaskWithId) => {
+    setTaskEdit(task)
+    setTaskDelModal(true)
+  }
+
+  const handleCloseDelModal = (e: React.SyntheticEvent, reason?: string) => {
+    setTaskDelModal(false)
+  }
+
+  const handleOpenCreateModal = () => {
+    setTaskAction('create')
+    setTaskEdit(null)
+    // console.log(task.modifiedAt)
+    setOptsMenuEl(null)
+    setTaskFormModal(true)
+  }
+
+  const handleOpenEditModal = (task: TaskWithId) => {
+    setTaskAction('edit')
+    setTaskEdit(task)
     console.log(task.modifiedAt)
     setOptsMenuEl(null)
-    setTaskEdit(task)
-    setModalEdit(true)
+    setTaskFormModal(true)
   }
 
   const handleCloseOpts = () => {
@@ -76,6 +102,24 @@ const TaskList = ({ tasks }: ITaskListProps) => {
 
   const handleOpenOpts = (e: React.MouseEvent<HTMLElement>) => {
     setOptsMenuEl(e.currentTarget)
+  }
+
+  const alertShow = (msg: string, type?: AlertColor) => {
+    if (type) setAlertType(type)
+    setAlertMsg(msg)
+    setAlertOpen(true)
+  }
+
+  const handleDelete = async (
+    task: TaskWithId | null,
+    e: React.SyntheticEvent
+  ) => {
+    e.stopPropagation()
+    if (!task) return
+    setTaskDelModal(false)
+    const deleteRes = await deleteTask(task.id).then(r => r)
+    // alert(`Delete ${docRef.id} successfully`)
+    alertShow(`Successfully deleted task id ${deleteRes?.id} !!`, 'error')
   }
 
   const CustomRow = styled(Box)({
@@ -87,6 +131,9 @@ const TaskList = ({ tasks }: ITaskListProps) => {
 
   return (
     <Container>
+      <Button variant='contained' onClick={handleOpenCreateModal}>
+        ADD TASK
+      </Button>
       {tasks.map((task: TaskWithId) => {
         return (
           <>
@@ -112,44 +159,59 @@ const TaskList = ({ tasks }: ITaskListProps) => {
                   cursor: expanded === task.id ? 'default !important' : 'auto',
                 }}
               >
-                <Typography
-                  noWrap={expanded === task.id ? false : true}
-                  fontSize={18}
-                  fontWeight={500}
-                  sx={{ width: '100%', alignSelf: 'center' }}
-                >
-                  {task.title}
-                </Typography>
-
-                {/* <IconButton */}
-                {/*   onClick={handleOpenOpts} */}
-                {/*   sx={{ */}
-                {/*     display: expanded === task.id ? 'flex' : 'none', */}
-                {/*     mr: 1, */}
-                {/*   }} */}
-                {/* > */}
-                {/*   <MoreHorizRounded /> */}
-                {/* </IconButton> */}
-
                 <Box
                   sx={{
-                    display: expanded === task.id ? 'flex' : 'none',
-                    gap: 1,
-                    mr: 1,
+                    display: 'flex',
+                    width: '100%',
+                    // backgroundColor:'red',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
                   }}
                 >
-                  <IconButton
-                    aria-label='Edit'
-                    onClick={() => handleOpenEditModal(task)}
+                  <Typography
+                    noWrap={expanded === task.id ? false : true}
+                    // noWrap={true}
+                    fontSize={19}
+                    fontWeight={500}
+                    sx={{
+                      maxWidth: { xs: 200, sm: 370, md: 500, lg: 800 },
+                      width: '100%',
+                    }}
                   >
-                    <EditRounded />
-                  </IconButton>
-                  <IconButton
-                    aria-label='Delete'
-                    // onClick={() => handleOpenEditModal(task)}
+                    {task.title}
+                  </Typography>
+
+                  {/* <IconButton */}
+                  {/*   onClick={handleOpenOpts} */}
+                  {/*   sx={{ */}
+                  {/*     display: expanded === task.id ? 'flex' : 'none', */}
+                  {/*     mr: 1, */}
+                  {/*   }} */}
+                  {/* > */}
+                  {/*   <MoreHorizRounded /> */}
+                  {/* </IconButton> */}
+
+                  <Box
+                    sx={{
+                      display: expanded === task.id ? 'flex' : 'none',
+                      gap: 1,
+                      mr: 1,
+                    }}
                   >
-                    <DeleteRounded color='error' />
-                  </IconButton>
+                    <IconButton
+                      aria-label='Edit'
+                      onClick={() => handleOpenEditModal(task)}
+                    >
+                      <EditRounded />
+                    </IconButton>
+                    <IconButton
+                      aria-label='Delete'
+                      // onClick={e => handleDelete(task.id, e)}
+                      onClick={() => handleOpenDelModal(task)}
+                    >
+                      <DeleteRounded color='error' />
+                    </IconButton>
+                  </Box>
                 </Box>
               </AccordionSummary>
               <AccordionDetails>
@@ -212,12 +274,33 @@ const TaskList = ({ tasks }: ITaskListProps) => {
         )
       })}
 
+      <AlertCustom />
+
       <TaskForm
         taskEdit={taskEdit}
-        open={modalEdit}
-        handleClose={handleCloseEditModal}
+        action={taskAction}
+        open={taskFormModal}
+        handleClose={handleCloseFormModal}
       />
 
+      <Modal open={taskDelModal} onClose={handleCloseDelModal}>
+        <Box
+          sx={{
+            position: 'absolute' as 'absolute',
+            top: '50%',
+            left: '50%',
+            minWidth: { xs: '85%', md: '50%' },
+            transform: 'translate(-50%, -50%)',
+            bgcolor: 'background.paper',
+            p: 4,
+          }}
+        >
+          Are you sure you want to delete {taskEdit?.title} ???
+          <Button onClick={e => handleDelete(taskEdit, e)}>
+            ARE YOU SURE????!?!?!?!?!?!
+          </Button>
+        </Box>
+      </Modal>
     </Container>
   )
 }

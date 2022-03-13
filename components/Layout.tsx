@@ -1,6 +1,5 @@
 import { Box, Container } from "@mui/material";
 import CustomDrawer from "./CustomDrawer";
-import { DrawerCtxProvider } from "../context/DrawerCtx";
 import NavBar from "./NavBar";
 import Footer from "./Footer";
 import { useRouter } from "next/router";
@@ -15,7 +14,6 @@ const Layout = ({ children }: LayoutProps) => {
   if (router.asPath === "/") {
     return (
       <>
-        <DrawerCtxProvider>
           <NavBar />
           <Container
             sx={{
@@ -29,13 +27,11 @@ const Layout = ({ children }: LayoutProps) => {
             {children}
           </Container>
           <Footer />
-        </DrawerCtxProvider>
       </>
     );
   }
   return (
     <>
-      <DrawerCtxProvider>
         <NavBar />
         <Container
           sx={{
@@ -57,7 +53,6 @@ const Layout = ({ children }: LayoutProps) => {
             {children}
           </Container>
         </Container>
-      </DrawerCtxProvider>
     </>
   );
 };

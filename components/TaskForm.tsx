@@ -3,40 +3,46 @@ import {
   Box,
   Modal,
   Button,
-  Typography,
+  // Typography,
   TextField,
-  FormControl,
+  // FormControl,
   Autocomplete,
   TextFieldProps,
-  Snackbar,
-  Alert,
+  AlertColor,
 } from '@mui/material'
-import { ITask } from '../util/types'
+import { ITask, taskDefault, TaskWithId } from '../util/types'
 import { CancelRounded, CheckCircleRounded } from '@mui/icons-material'
 
 import DateAdapter from '@mui/lab/AdapterMoment'
 import LocalizationProvider from '@mui/lab/LocalizationProvider'
 import { DatePicker } from '@mui/lab'
-import {
-  addDoc,
-  collection,
-  Firestore,
-  serverTimestamp,
-} from 'firebase/firestore'
-import { db } from '../util/firebase'
 import moment from 'moment'
+import { useAlertCtx } from '../context/AlertCtx'
+import { createTask } from '../firebase/task'
 
 interface ITaskProps {
-  taskEdit?: ITask | null
+  taskEdit: TaskWithId | null
+  action: 'create' | 'edit'
   open: boolean
   handleClose: (e: React.SyntheticEvent, reason?: string) => void
 }
 
-const TaskForm = ({ taskEdit, open, handleClose }: ITaskProps) => {
-  const [taskTemp, setTaskTemp] = useState<ITask | null>(null)
-  const [alertOpen, setAlertOpen] = useState<boolean>(false)
-  const [alertType, setAlertType] = useState<string>('success')
-  const [alertMsg, setAlertMsg] = useState<string | null>(null)
+const TaskForm = ({ taskEdit, action, open, handleClose }: ITaskProps) => {
+  const [taskTemp, setTaskTemp] = useState<TaskWithId | ITask | null>(null)
+  const [errors, setErrors] = useState<Record<string, string | null> | null>(
+    null
+  )
+  // const [alertOpen, setAlertOpen] = useState<boolean>(false)
+  // const [alertType, setAlertType] = useState<AlertColor>('success')
+  // const [alertMsg, setAlertMsg] = useState<string | null>(null)
+  const {
+    // alertOpen,
+    setAlertOpen,
+    // alertType,
+    setAlertType,
+    // alertMsg,
+    setAlertMsg,
+  } = useAlertCtx()
 
   // Capture taskEdit, which will be different for each task for which
   // we press the Edit button since the props will be different
@@ -49,34 +55,70 @@ const TaskForm = ({ taskEdit, open, handleClose }: ITaskProps) => {
   // even if we close the Modal and changes will be there if we reopen the same
   // task to edit
   useEffect(() => {
-    if (!taskEdit) return
-    setTaskTemp(taskEdit)
+    if (!taskEdit) {
+      setTaskTemp({ ...taskDefault })
+    } else {
+      setTaskTemp(taskEdit)
+    }
   }, [taskEdit])
 
   const handleTextUpdate = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // console.log(taskTemp)
     if (!taskTemp) return
     setTaskTemp({ ...taskTemp, [e.target.id]: e.target.value })
   }
 
+  const closeModal = (e: React.SyntheticEvent) => {
+    setErrors(null)
+    handleClose(e)
+  }
+
+  const handleAuCompUpdate = (
+    e: React.SyntheticEvent<Element, Event>,
+    newValue: string | null,
+    property: keyof ITask
+  ) => {
+    if (!taskTemp) return
+    setTaskTemp({ ...taskTemp, [property]: newValue })
+  }
+
   const handleDateUpdate = (newDate: Date | null) => {
     if (!taskTemp || !newDate) return
-    // console.log(moment(newDate).format('DD MMMM YYYY'))
-    // console.log(moment(newDate).format('x'))
-    // console.log(taskTemp.createdAt)
     setTaskTemp({ ...taskTemp, dueDate: Number(moment(newDate).format('x')) })
   }
 
-  const submitCreateTask = async (e: React.SyntheticEvent) => {
-    if (!taskTemp) return
-    // handleClose(e)
-    const collectionRef = collection(db, 'tasks')
-    const newTask: ITask = {
-      ...taskTemp,
-      createdAt: serverTimestamp(),
-      modifiedAt: serverTimestamp(),
+  const alertShow = (msg: string, type: AlertColor) => {
+    if (type) setAlertType(type)
+    setAlertMsg(msg)
+    setAlertOpen(true)
+  }
+
+  const errorCheck = () => {
+    const temp: Record<string, string | null> = {
+      title: taskTemp?.title ? null : 'Must have Title',
+      description: taskTemp?.description ? null : 'Must have description',
+      asignee: taskTemp?.asignee ? null : 'Must be assigned',
+      dueDate: taskTemp?.dueDate ? null : 'Must assign due date',
+      parent: taskTemp?.parent ? null : 'Must form part of a project',
     }
-    const docRef = await addDoc(collectionRef, newTask)
-    alert(`Todo widh ref ${docRef.id} created at ${Date.now()} successfully`)
+    setErrors({ ...temp })
+    return Object.values(temp).every(v => v === null)
+  }
+
+  const handleSubmit = async (e: React.SyntheticEvent) => {
+    e.preventDefault()
+    if (!errorCheck()) return
+    handleClose(e)
+    const submitRes =
+      action === 'create'
+        ? await createTask(taskTemp).then(r => r)
+        : await createTask(taskTemp).then(r => r)
+    alertShow(
+      `Todo id:${submitRes?.docRef.id}, named: ${
+        submitRes?.newTask.title
+      } created at ${Date.now()} successfully`,
+      'success'
+    )
     setTaskTemp(null)
   }
 
@@ -88,127 +130,134 @@ const TaskForm = ({ taskEdit, open, handleClose }: ITaskProps) => {
   }
 
   return (
-    <>
-      <Modal
-        // hideBackdrop
-        open={open}
-        onClose={handleClose}
-        // onBackdropClick={()=>null}
-        aria-labelledby='child-modal-title'
-        aria-describedby='child-modal-description'
+    <Modal
+      open={open}
+      onClose={handleClose}
+      aria-labelledby='child-modal-title'
+      aria-describedby='child-modal-description'
+    >
+      <Box
+        component='form'
+        noValidate
+        onSubmit={handleSubmit}
+        sx={{
+          position: 'absolute' as 'absolute',
+          top: '50%',
+          left: '50%',
+          minWidth: { xs: '85%', md: '50%' },
+          transform: 'translate(-50%, -50%)',
+          bgcolor: 'background.paper',
+          p: 4,
+        }}
       >
-        <Box
-          sx={{
-            position: 'absolute' as 'absolute',
-            top: '50%',
-            left: '50%',
-            minWidth: { xs: '85%', md: '50%' },
-            transform: 'translate(-50%, -50%)',
-            bgcolor: 'background.paper',
-            p: 4,
-          }}
-        >
-          <Box
-            component='form'
-            sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 3 }}
-            noValidate
-          >
-            <FormControl>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 3 }}>
+          <TextField
+            {...requiredTextProps}
+            id='title'
+            label='Title'
+            error={Boolean(errors?.title)}
+            value={taskTemp?.title}
+            onChange={handleTextUpdate}
+            inputProps={{ maxLength: 100 }}
+            helperText={errors?.title}
+            // helperText={`Characters left: ${
+            //   100 - (taskTemp?.title ? taskTemp.title.length : 0)
+            // }`}
+          />
+
+          <TextField
+            id='description'
+            error={Boolean(errors?.description)}
+            helperText={errors?.description}
+            label='description'
+            fullWidth
+            required
+            multiline
+            maxRows={5}
+            minRows={3}
+            value={taskTemp?.description}
+            onChange={handleTextUpdate}
+          />
+
+          <LocalizationProvider dateAdapter={DateAdapter}>
+            <DatePicker
+              disablePast
+              label='Due date'
+              openTo='day'
+              views={['year', 'month', 'day']}
+              value={taskTemp?.dueDate}
+              onChange={handleDateUpdate}
+              inputFormat='DD/MM/YYYY'
+              renderInput={params => <TextField {...params} />}
+            />
+          </LocalizationProvider>
+
+          <Autocomplete
+            id='asignee'
+            disableCloseOnSelect
+            freeSolo
+            value={taskTemp?.asignee}
+            options={['Test2', 'Test3', 'Test 4']}
+            onChange={(e, newValue) =>
+              handleAuCompUpdate(e, newValue, 'asignee')
+            }
+            renderInput={(params: any) => (
               <TextField
-                // key='title'
-                {...requiredTextProps}
-                id='title'
-                // variant='outlined'
-                // size='small'
-                label='Title'
-                // fullWidth
-                // required
-                value={taskTemp?.title}
-                onChange={handleTextUpdate}
+                {...params}
+                value={taskTemp?.asignee}
+                error={Boolean(errors?.asignee)}
+                helperText={errors?.asignee}
+                label='Asignee'
+                variant='outlined'
+                size='small'
               />
-            </FormControl>
-            <TextField
-              id='description'
-              label='description'
-              fullWidth
-              required
-              multiline
-              maxRows={5}
-              minRows={3}
-              value={taskTemp?.description}
-              onChange={handleTextUpdate}
-            />
-            <Box
-              sx={{ display: 'flex', gap: 4, justifyContent: 'space-between' }}
-            >
-              <LocalizationProvider dateAdapter={DateAdapter}>
-                <DatePicker
-                  disablePast
-                  label='Due date'
-                  openTo='day'
-                  views={['year', 'month', 'day']}
-                  value={taskTemp?.dueDate}
-                  onChange={handleDateUpdate}
-                  inputFormat='DD/MM/YYYY'
-                  renderInput={params => <TextField {...params} />}
-                />
-                <DatePicker
-                  disablePast
-                  label='Due date'
-                  openTo='day'
-                  views={['year', 'month', 'day']}
-                  value={taskTemp?.dueDate}
-                  onChange={() => null}
-                  inputFormat='DD/MM/YYYY'
-                  renderInput={params => <TextField {...params} />}
-                />
-              </LocalizationProvider>
-            </Box>
-            <Autocomplete
-              id='asignee'
-              disableCloseOnSelect
-              freeSolo
-              options={[taskTemp?.title, 'Test2', 'Test3', 'Test 4']}
-              // getOptionLabel= (option: FilmOptionType) => option.title,
-              renderInput={(params: any) => (
-                <TextField
-                  {...params}
-                  value={taskTemp?.asignee}
-                  onChange={handleTextUpdate}
-                  label='Asignee'
-                  variant='outlined'
-                  size='small'
-                />
-              )}
-            />
-          </Box>
-          <Box sx={{ display: 'flex', justifyContent: 'space-evenly' }}>
-            <Button
-              color='error'
-              type='button'
-              variant='contained'
-              onClick={handleClose}
-              // onClick={()=>setAlertOpen(true)}
-              startIcon={<CancelRounded />}
-            >
-              Discard
-            </Button>
-            <Button
-              color='primary'
-              type='button'
-              variant='contained'
-              onClick={submitCreateTask}
-              startIcon={<CheckCircleRounded />}
-            >
-              Submit
-            </Button>
-          </Box>
+            )}
+          />
+
+          <Autocomplete
+            id='parent'
+            fullWidth
+            size='small'
+            options={['Project1', 'Project2', 'Project3']}
+            value={taskTemp?.parent}
+            onChange={(e, newValue) =>
+              handleAuCompUpdate(e, newValue, 'parent')
+            }
+            renderInput={(params: any) => (
+              <TextField
+                {...params}
+                value={taskTemp?.parent}
+                error={Boolean(errors?.parent)}
+                helperText={errors?.parent}
+                label='Parent Project'
+                variant='outlined'
+                size='small'
+              />
+            )}
+          />
         </Box>
-      </Modal>
-      <Snackbar open={alertOpen} autoHideDuration={1000}>
-        <Alert>SUCCESS</Alert>
-      </Snackbar>
-    </>
+
+        <Box sx={{ display: 'flex', justifyContent: 'space-evenly' }}>
+          <Button
+            color='error'
+            type='button'
+            variant='contained'
+            onClick={closeModal}
+            startIcon={<CancelRounded />}
+          >
+            Discard
+          </Button>
+          <Button
+            color='primary'
+            type='submit'
+            variant='contained'
+            startIcon={<CheckCircleRounded />}
+          >
+            Submit
+          </Button>
+        </Box>
+      </Box>
+    </Modal>
   )
 }
 

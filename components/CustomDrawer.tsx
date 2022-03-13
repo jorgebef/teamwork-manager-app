@@ -16,7 +16,6 @@ import {
   FolderRounded,
   AssignmentRounded,
 } from '@mui/icons-material'
-import { useDrawerCtx } from '../context/DrawerCtx'
 import toggleDrawer from '../util/toggleDrawer'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -89,14 +88,14 @@ const DrawerList = () => {
 }
 
 const TempDrawer = () => {
-  const { open, setOpen } = useDrawerCtx()
+  const { openDrawer, setOpenDrawer } = useAuthCtx()
 
   return (
     <SwipeableDrawer
       anchor='left'
-      open={open}
-      onClose={toggleDrawer(false, setOpen)}
-      onOpen={toggleDrawer(true, setOpen)}
+      open={openDrawer}
+      onClose={toggleDrawer(false, setOpenDrawer)}
+      onOpen={toggleDrawer(true, setOpenDrawer)}
       sx={{
         display: { xs: 'flex', md: 'none' },
       }}
@@ -104,8 +103,8 @@ const TempDrawer = () => {
       <Box
         sx={{ width: 240 }}
         role='presentation'
-        onClick={toggleDrawer(false, setOpen)}
-        onKeyDown={toggleDrawer(false, setOpen)}
+        onClick={toggleDrawer(false, setOpenDrawer)}
+        onKeyDown={toggleDrawer(false, setOpenDrawer)}
       >
         <DrawerList />
       </Box>

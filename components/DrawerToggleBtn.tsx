@@ -1,14 +1,12 @@
 import { Box, IconButton } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
-import { useDrawerCtx } from '../context/DrawerCtx'
 import { useAuthCtx } from '../context/AuthCtx'
 import toggleDrawer from '../util/toggleDrawer'
 import { CloseRounded } from '@mui/icons-material'
 import { useRouter } from 'next/router'
 
 const DrawerToggleBtn = () => {
-  const { auth } = useAuthCtx()
-  const { open, setOpen } = useDrawerCtx()
+  const { auth, openDrawer, setOpenDrawer  } = useAuthCtx()
 
   return (
     <Box
@@ -25,10 +23,10 @@ const DrawerToggleBtn = () => {
         aria-label='account of current user'
         aria-controls='menu-appbar'
         aria-haspopup='true'
-        onClick={toggleDrawer(!open, setOpen)}
+        onClick={toggleDrawer(!openDrawer, setOpenDrawer)}
         color='inherit'
       >
-        {open ? <CloseRounded /> : <MenuIcon />}
+        {openDrawer ? <CloseRounded /> : <MenuIcon />}
       </IconButton>
     </Box>
   )
