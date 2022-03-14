@@ -20,14 +20,14 @@ import moment from 'moment'
 import { useAlertCtx } from '../context/AlertCtx'
 import { createTask } from '../firebase/task'
 
-interface ITaskProps {
+interface ITaskFormModalProps {
   taskEdit: TaskWithId | null
   action: 'create' | 'edit'
   open: boolean
   handleClose: (e: React.SyntheticEvent, reason?: string) => void
 }
 
-const TaskForm = ({ taskEdit, action, open, handleClose }: ITaskProps) => {
+const TaskForm = ({ taskEdit, action, open, handleClose }: ITaskFormModalProps) => {
   const [taskTemp, setTaskTemp] = useState<TaskWithId | ITask | null>(null)
   const [errors, setErrors] = useState<Record<string, string | null> | null>(
     null

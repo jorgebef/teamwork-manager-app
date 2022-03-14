@@ -1,4 +1,4 @@
-import {  useState } from 'react'
+import { useState } from 'react'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
@@ -30,10 +30,11 @@ import moment from 'moment'
 import { styled } from '@mui/system'
 import Image from 'next/image'
 import profile2 from '../public/profile1.jpg'
-import TaskForm from './TaskForm'
+import TaskForm from './TaskFormModal'
 import { useAlertCtx } from '../context/AlertCtx'
 import AlertCustom from './Alert'
 import { deleteTask } from '../firebase/task'
+import TaskDelModal from './TaskDelModal'
 
 interface ITaskListProps {
   tasks: TaskWithId[]
@@ -283,24 +284,11 @@ const TaskList = ({ tasks }: ITaskListProps) => {
         handleClose={handleCloseFormModal}
       />
 
-      <Modal open={taskDelModal} onClose={handleCloseDelModal}>
-        <Box
-          sx={{
-            position: 'absolute' as 'absolute',
-            top: '50%',
-            left: '50%',
-            minWidth: { xs: '85%', md: '50%' },
-            transform: 'translate(-50%, -50%)',
-            bgcolor: 'background.paper',
-            p: 4,
-          }}
-        >
-          Are you sure you want to delete {taskEdit?.title} ???
-          <Button onClick={e => handleDelete(taskEdit, e)}>
-            ARE YOU SURE????!?!?!?!?!?!
-          </Button>
-        </Box>
-      </Modal>
+      <TaskDelModal
+        open={taskDelModal}
+        taskEdit={taskEdit}
+        handleClose={handleCloseDelModal}
+      />
     </Container>
   )
 }
