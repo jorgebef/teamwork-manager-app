@@ -19,10 +19,10 @@ const Btn = styled.button<IButtonProps>`
 `
 
 const SignInBtn: React.FC = ({ children }) => {
-  const { setAuth } = useAuthCtx()
+  const { setLocalAuth } = useAuthCtx()
 
   const handleSignIn = async () => {
-    setAuth(true)
+    setLocalAuth(true)
   }
 
   return (
