@@ -25,7 +25,7 @@ import profile3 from '../public/profile3.jpg'
 
 const NavBar: React.FC = () => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
-  const { localAuth, setLocalAuth } = useAuthCtx()
+  const { localAuth, setLocalAuth, user, setUser } = useAuthCtx()
   const router = useRouter()
   const theme = useTheme()
 
