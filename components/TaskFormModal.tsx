@@ -27,7 +27,12 @@ interface ITaskFormModalProps {
   handleClose: (e: React.SyntheticEvent, reason?: string) => void
 }
 
-const TaskForm = ({ taskEdit, action, open, handleClose }: ITaskFormModalProps) => {
+const TaskForm = ({
+  taskEdit,
+  action,
+  open,
+  handleClose,
+}: ITaskFormModalProps) => {
   const [taskTemp, setTaskTemp] = useState<TaskWithId | ITask | null>(null)
   const [errors, setErrors] = useState<Record<string, string | null> | null>(
     null
@@ -35,14 +40,7 @@ const TaskForm = ({ taskEdit, action, open, handleClose }: ITaskFormModalProps) 
   // const [alertOpen, setAlertOpen] = useState<boolean>(false)
   // const [alertType, setAlertType] = useState<AlertColor>('success')
   // const [alertMsg, setAlertMsg] = useState<string | null>(null)
-  const {
-    // alertOpen,
-    setAlertOpen,
-    // alertType,
-    setAlertType,
-    // alertMsg,
-    setAlertMsg,
-  } = useAlertCtx()
+  const { alertShow } = useAlertCtx()
 
   // Capture taskEdit, which will be different for each task for which
   // we press the Edit button since the props will be different
@@ -85,12 +83,6 @@ const TaskForm = ({ taskEdit, action, open, handleClose }: ITaskFormModalProps) 
   const handleDateUpdate = (newDate: Date | null) => {
     if (!taskTemp || !newDate) return
     setTaskTemp({ ...taskTemp, dueDate: Number(moment(newDate).format('x')) })
-  }
-
-  const alertShow = (msg: string, type: AlertColor) => {
-    if (type) setAlertType(type)
-    setAlertMsg(msg)
-    setAlertOpen(true)
   }
 
   const errorCheck = () => {

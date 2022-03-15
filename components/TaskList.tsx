@@ -4,7 +4,6 @@ import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import Typography from '@mui/material/Typography'
 import {
-  AlertColor,
   Avatar,
   Box,
   Button,
@@ -14,7 +13,6 @@ import {
   ListItemIcon,
   Menu,
   MenuItem,
-  Modal,
   // Snackbar,
   useTheme,
 } from '@mui/material'
@@ -25,7 +23,7 @@ import {
   FlagRounded,
   // MoreHorizRounded,
 } from '@mui/icons-material'
-import { TaskWithId, ITask } from '../util/types'
+import { TaskWithId } from '../util/types'
 import moment from 'moment'
 import { styled } from '@mui/system'
 import Image from 'next/image'
@@ -49,7 +47,7 @@ const TaskList = ({ tasks }: ITaskListProps) => {
   const [taskEdit, setTaskEdit] = useState<TaskWithId | null>(null)
   const [optsMenuEl, setOptsMenuEl] = useState<HTMLElement | null>(null)
   const theme = useTheme()
-  const { setAlertOpen, setAlertType, setAlertMsg } = useAlertCtx()
+  const { alertShow } = useAlertCtx()
 
   const handleExpandTask =
     (panel: string) => (e: React.SyntheticEvent, isExpanded: boolean) => {
@@ -103,12 +101,6 @@ const TaskList = ({ tasks }: ITaskListProps) => {
 
   const handleOpenOpts = (e: React.MouseEvent<HTMLElement>) => {
     setOptsMenuEl(e.currentTarget)
-  }
-
-  const alertShow = (msg: string, type?: AlertColor) => {
-    if (type) setAlertType(type)
-    setAlertMsg(msg)
-    setAlertOpen(true)
   }
 
   const handleDelete = async (
