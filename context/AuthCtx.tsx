@@ -62,7 +62,7 @@ export const AuthCtxProvider: React.FC = ({ children }) => {
       .then(res => {
         setUser(res.user)
       })
-      .catch(err => console.log(err))
+      .catch(err => console.log('error: ' + err))
   }
 
   const loginAnon = async () => {

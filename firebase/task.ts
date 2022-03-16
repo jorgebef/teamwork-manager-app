@@ -3,7 +3,11 @@ import {
   collection,
   deleteDoc,
   doc,
+  getDocs,
+  query,
   serverTimestamp,
+  setDoc,
+  where,
 } from 'firebase/firestore'
 import { ITask } from '../util/types'
 import { db } from './config'
@@ -26,4 +30,14 @@ export const deleteTask = async (id: string | null) => {
   const docRef = doc(db, 'tasks', id)
   await deleteDoc(docRef)
   return { docRef, id }
+}
+
+export const fetchTaskList = async (uid: string) => {
+  const tasksRef = collection(db, 'tasks')
+
+  const q = query(tasksRef, where('createdBy', '==', uid))
+
+  const querySnapshot = await getDocs(q)
+
+  return q
 }

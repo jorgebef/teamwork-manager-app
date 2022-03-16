@@ -33,6 +33,7 @@ import { useAlertCtx } from '../context/AlertCtx'
 import AlertCustom from './Alert'
 import { deleteTask } from '../firebase/task'
 import TaskDelModal from './TaskDelModal'
+import { useAuthCtx } from '../context/AuthCtx'
 
 interface ITaskListProps {
   tasks: TaskWithId[]
@@ -48,6 +49,7 @@ const TaskList = ({ tasks }: ITaskListProps) => {
   const [optsMenuEl, setOptsMenuEl] = useState<HTMLElement | null>(null)
   const theme = useTheme()
   const { alertShow } = useAlertCtx()
+  const { user } = useAuthCtx()
 
   const handleExpandTask =
     (panel: string) => (e: React.SyntheticEvent, isExpanded: boolean) => {

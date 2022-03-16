@@ -3,6 +3,7 @@ import { FieldValue } from 'firebase/firestore'
 export interface ITask {
   // id: string
   title: string | null
+  createdBy: string | undefined
   description: string | null
   asignee: string | null
   parent: string | null
@@ -13,6 +14,7 @@ export interface ITask {
 
 export const taskDefault: ITask = {
   title: null,
+  createdBy: undefined,
   description: null,
   asignee: null,
   parent: null,

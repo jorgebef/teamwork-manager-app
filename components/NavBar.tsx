@@ -93,8 +93,15 @@ const NavBar: React.FC = () => {
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title='Account'>
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar sx={{ height: 50, width: 50 }}>
-                    <Image alt='Remy Sharp' src={profile3} quality={20} />
+                  <Avatar
+                    src={user.photoURL ? user.photoURL : undefined}
+                    sx={{ height: 50, width: 50 }}
+                  >
+                    <Image
+                      alt={user.displayName ? user.displayName : undefined}
+                      src={user.photoURL ? user.photoURL : profile3}
+                      quality={20}
+                    />
                   </Avatar>
                 </IconButton>
               </Tooltip>

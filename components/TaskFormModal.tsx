@@ -19,6 +19,7 @@ import { DatePicker } from '@mui/lab'
 import moment from 'moment'
 import { useAlertCtx } from '../context/AlertCtx'
 import { createTask } from '../firebase/task'
+import { useAuthCtx } from '../context/AuthCtx'
 
 interface ITaskFormModalProps {
   taskEdit: TaskWithId | null
@@ -37,10 +38,8 @@ const TaskForm = ({
   const [errors, setErrors] = useState<Record<string, string | null> | null>(
     null
   )
-  // const [alertOpen, setAlertOpen] = useState<boolean>(false)
-  // const [alertType, setAlertType] = useState<AlertColor>('success')
-  // const [alertMsg, setAlertMsg] = useState<string | null>(null)
   const { alertShow } = useAlertCtx()
+  const { user } = useAuthCtx()
 
   // Capture taskEdit, which will be different for each task for which
   // we press the Edit button since the props will be different
@@ -54,7 +53,7 @@ const TaskForm = ({
   // task to edit
   useEffect(() => {
     if (!taskEdit) {
-      setTaskTemp({ ...taskDefault })
+      setTaskTemp({ ...taskDefault, createdBy: user?.uid })
     } else {
       setTaskTemp(taskEdit)
     }
