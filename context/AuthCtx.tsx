@@ -5,8 +5,9 @@ import {
   UserCredential,
   User,
   signOut,
+  signInWithPopup,
 } from 'firebase/auth'
-import { auth } from '../firebase/config'
+import { auth, googleProvider } from '../firebase/config'
 
 export interface IAuthCtx {
   localAuth: boolean
@@ -17,6 +18,8 @@ export interface IAuthCtx {
   setUser: React.Dispatch<React.SetStateAction<any>>
   login: () => Promise<UserCredential>
   logout: () => void
+  loginAnon: () => Promise<any>
+  loginGoogle: () => void
 }
 
 export const AuthCtx = createContext<IAuthCtx>({} as IAuthCtx)
@@ -36,11 +39,14 @@ export const AuthCtxProvider: React.FC = ({ children }) => {
   const [user, setUser] = useState<User | null>(null)
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(user => {
+    const unsubscribe = onAuthStateChanged(auth, user => {
       if (user) {
         setUser(user)
       } else {
-        setUser(null)
+        // setUser(null)
+        signInAnonymously(auth).catch(err => {
+          console.log(err)
+        })
       }
       console.log(user?.uid)
     })
@@ -48,6 +54,18 @@ export const AuthCtxProvider: React.FC = ({ children }) => {
   }, [])
 
   const login = async () => {
+    return await signInAnonymously(auth)
+  }
+
+  const loginGoogle = () => {
+    signInWithPopup(auth, googleProvider)
+      .then(res => {
+        setUser(res.user)
+      })
+      .catch(err => console.log(err))
+  }
+
+  const loginAnon = async () => {
     return await signInAnonymously(auth)
   }
 
@@ -67,6 +85,8 @@ export const AuthCtxProvider: React.FC = ({ children }) => {
         setUser,
         login,
         logout,
+        loginAnon,
+        loginGoogle,
       }}
     >
       {children}

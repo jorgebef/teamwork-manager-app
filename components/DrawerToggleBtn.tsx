@@ -6,14 +6,16 @@ import { CloseRounded } from '@mui/icons-material'
 import { useRouter } from 'next/router'
 
 const DrawerToggleBtn = () => {
-  const { localAuth, openDrawer, setOpenDrawer  } = useAuthCtx()
+  const { localAuth, user, openDrawer, setOpenDrawer } = useAuthCtx()
 
   return (
     <Box
       sx={{
         flexGrow: 0,
         display:
-          localAuth && useRouter().asPath !== '/'
+          // -------------------- LOCAL USER
+          // localAuth && useRouter().asPath !== '/'
+          user && useRouter().asPath !== '/'
             ? { xs: 'flex', md: 'none' }
             : 'none',
       }}

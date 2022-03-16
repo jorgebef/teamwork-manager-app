@@ -25,14 +25,20 @@ import profile3 from '../public/profile3.jpg'
 
 const NavBar: React.FC = () => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
-  const { localAuth, setLocalAuth, user, setUser } = useAuthCtx()
+  const { localAuth, setLocalAuth, user, setUser, logout } = useAuthCtx()
   const router = useRouter()
   const theme = useTheme()
 
+  // ----------------- LOCAL USER
+  // useEffect(() => {
+  //   if (!localAuth) return
+  //   router.push('/dashboard')
+  // }, [localAuth])
+
   useEffect(() => {
-    if (!localAuth) return
+    if (!user) return
     router.push('/dashboard')
-  }, [localAuth])
+  }, [user])
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget)
@@ -44,7 +50,8 @@ const NavBar: React.FC = () => {
 
   const handleSignOut = () => {
     setAnchorElUser(null)
-    setLocalAuth(false)
+    // setLocalAuth(false)
+    logout()
   }
 
   return (
@@ -80,7 +87,9 @@ const NavBar: React.FC = () => {
             </Link>
           </Box>
 
-          {localAuth ? (
+          {/* -------------------- LOCAL USER */}
+          {/* {localAuth ? ( */}
+          {user ? (
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title='Account'>
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>

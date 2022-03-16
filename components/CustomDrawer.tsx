@@ -137,9 +137,10 @@ const PermanentDrawer = () => {
 }
 
 const CustomDrawer: React.FC = () => {
-  const { localAuth } = useAuthCtx()
+  const { localAuth, user } = useAuthCtx()
 
-  if (!localAuth) return null
+  // if (!localAuth) return null
+  if (!user) return null
 
   return (
     <>

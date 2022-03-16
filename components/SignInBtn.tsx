@@ -19,7 +19,7 @@ const Btn = styled.button<IButtonProps>`
 `
 
 const SignInBtn: React.FC = ({ children }) => {
-  const { setLocalAuth } = useAuthCtx()
+  const { setLocalAuth, loginGoogle } = useAuthCtx()
 
   const handleSignIn = async () => {
     setLocalAuth(true)
@@ -38,7 +38,8 @@ const SignInBtn: React.FC = ({ children }) => {
       color='success'
       type='button'
       variant='contained'
-      onClick={handleSignIn}
+      // onClick={handleSignIn}
+      onClick={loginGoogle}
     >
       {children}
     </Button>
