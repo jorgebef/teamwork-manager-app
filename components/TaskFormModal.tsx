@@ -70,7 +70,7 @@ const TaskForm = ({
     handleClose(e)
   }
 
-  const handleAuCompUpdate = (
+  const handleAutoCompUpdate = (
     e: React.SyntheticEvent<Element, Event>,
     newValue: string | null,
     property: keyof ITask
@@ -88,7 +88,7 @@ const TaskForm = ({
     const temp: Record<string, string | null> = {
       title: taskTemp?.title ? null : 'Must have Title',
       description: taskTemp?.description ? null : 'Must have description',
-      asignee: taskTemp?.asignee ? null : 'Must be assigned',
+      asignee: taskTemp?.assignedTo ? null : 'Must be assigned',
       dueDate: taskTemp?.dueDate ? null : 'Must assign due date',
       parent: taskTemp?.parent ? null : 'Must form part of a project',
     }
@@ -100,10 +100,11 @@ const TaskForm = ({
     e.preventDefault()
     if (!errorCheck()) return
     handleClose(e)
+    if(!taskTemp || !user) return
     const submitRes =
       action === 'create'
-        ? await createTask(taskTemp).then(r => r)
-        : await createTask(taskTemp).then(r => r)
+        ? await createTask(taskTemp,user.uid).then(r => r)
+        : await createTask(taskTemp,user.uid).then(r => r)
     alertShow(
       `Todo id:${submitRes?.docRef.id}, named: ${
         submitRes?.newTask.title
@@ -187,15 +188,15 @@ const TaskForm = ({
             id='asignee'
             disableCloseOnSelect
             freeSolo
-            value={taskTemp?.asignee}
+            value={taskTemp?.assignedTo}
             options={['Test2', 'Test3', 'Test 4']}
             onChange={(e, newValue) =>
-              handleAuCompUpdate(e, newValue, 'asignee')
+              handleAutoCompUpdate(e, newValue, 'assignedTo')
             }
             renderInput={(params: any) => (
               <TextField
                 {...params}
-                value={taskTemp?.asignee}
+                value={taskTemp?.assignedTo}
                 error={Boolean(errors?.asignee)}
                 helperText={errors?.asignee}
                 label='Asignee'
@@ -212,7 +213,7 @@ const TaskForm = ({
             options={['Project1', 'Project2', 'Project3']}
             value={taskTemp?.parent}
             onChange={(e, newValue) =>
-              handleAuCompUpdate(e, newValue, 'parent')
+              handleAutoCompUpdate(e, newValue, 'parent')
             }
             renderInput={(params: any) => (
               <TextField

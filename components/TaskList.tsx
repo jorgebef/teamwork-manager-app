@@ -230,7 +230,7 @@ const TaskList = ({ tasks }: ITaskListProps) => {
                     <Avatar sx={{ width: 35, height: 35 }}>
                       <Image alt='user1' src={profile2} quality={20} />
                     </Avatar>
-                    <Typography fontWeight={500}>{task.asignee}</Typography>
+                    <Typography fontWeight={500}>{task.assignedTo}</Typography>
                   </CustomRow>
                 </Box>
               </AccordionDetails>

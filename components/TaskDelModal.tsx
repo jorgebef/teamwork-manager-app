@@ -11,6 +11,7 @@ import { TaskWithId } from '../util/types'
 import { deleteTask } from '../firebase/task'
 import { useAlertCtx } from '../context/AlertCtx'
 import { CancelRounded, DeleteRounded } from '@mui/icons-material'
+import { useAuthCtx } from '../context/AuthCtx'
 
 interface ITaskDelModalProps {
   open: boolean
@@ -32,6 +33,7 @@ export const TaskDelModal = ({
     setAlertMsg,
   } = useAlertCtx()
   const theme = useTheme()
+  const { user } = useAuthCtx()
 
   const alertShow = (msg: string, type?: AlertColor) => {
     if (type) setAlertType(type)
@@ -44,11 +46,11 @@ export const TaskDelModal = ({
     e: React.SyntheticEvent
   ) => {
     e.stopPropagation()
-    if (!task) return
+    if (!task || !user) return
     handleClose(e)
-    const deleteRes = await deleteTask(task.id).then(r => r)
+    const deleteRes = await deleteTask(task.id, user.uid).then(r => r)
     // alert(`Delete ${docRef.id} successfully`)
-    alertShow(`Successfully deleted task id ${deleteRes?.id} !!`, 'error')
+    alertShow(`Successfully deleted task id ${deleteRes?.taskId} !!`, 'error')
   }
 
   return (
