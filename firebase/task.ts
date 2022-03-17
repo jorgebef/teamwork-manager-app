@@ -3,16 +3,15 @@ import {
   collection,
   deleteDoc,
   doc,
-  getDocs,
-  query,
+  DocumentData,
+  getDoc,
   serverTimestamp,
-  setDoc,
-  where,
+  updateDoc,
 } from 'firebase/firestore'
 import { ITask } from '../util/types'
 import { db } from './config'
 
-export const createTask = async (task: ITask | null) => {
+export const createTask = async (task: ITask | null, uid: string) => {
   if (!task) return
   const collectionRef = collection(db, 'tasks')
   // const { ['id']: _, ...newTask }: TaskWithId = task
@@ -22,22 +21,25 @@ export const createTask = async (task: ITask | null) => {
     createdAt: serverTimestamp(),
     modifiedAt: serverTimestamp(),
   })
+
+  const userDocRef = doc(db, 'users', uid)
+  const userDocSnap: DocumentData = await getDoc(userDocRef)
+  const tasksPrev: string[] = userDocSnap.data()?.createdTasks
+  await updateDoc(userDocRef, 'createdTasks', [...tasksPrev, docRef.id])
+
   return { docRef, newTask }
 }
 
-export const deleteTask = async (id: string | null) => {
-  if (!id) return
-  const docRef = doc(db, 'tasks', id)
+export const deleteTask = async (taskId: string | null, uid: string) => {
+  if (!taskId) return
+  const docRef = doc(db, 'tasks', taskId)
   await deleteDoc(docRef)
-  return { docRef, id }
-}
 
-export const fetchTaskList = async (uid: string) => {
-  const tasksRef = collection(db, 'tasks')
+  const userDocRef = doc(db, 'users', uid)
+  const userDocSnap = await getDoc(userDocRef)
+  const tasksPrev: string[] = userDocSnap.data()?.createdTasks
+  const updatedTasks = tasksPrev.filter(t => t !== taskId)
+  await updateDoc(userDocRef, 'createdTasks', [...updatedTasks])
 
-  const q = query(tasksRef, where('createdBy', '==', uid))
-
-  const querySnapshot = await getDocs(q)
-
-  return q
+  return { docRef, taskId }
 }
