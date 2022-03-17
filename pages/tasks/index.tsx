@@ -10,11 +10,12 @@ import { db } from '../../firebase/config'
 import { TaskWithId } from '../../util/types'
 import TaskList from '../../components/TaskList'
 import { useAuthCtx } from '../../context/AuthCtx'
-import { fetchUserTasks } from '../../firebase/task'
+import { Typography } from '@mui/material'
 
 const Tasks = () => {
   const [tasks, setTasks] = useState<TaskWithId[]>([])
   const [taskList, setTaskList] = useState<string[] | null>(null)
+  const [loading, setLoading] = useState<boolean>(true)
   const { user } = useAuthCtx()
 
   useEffect(() => {
@@ -60,12 +61,17 @@ const Tasks = () => {
           completed: doc.data().completed,
         }))
       )
+      setLoading(false)
     })
 
     return unsubscribe
   }, [taskList])
 
-  return <TaskList tasks={tasks} />
+  return loading ? (
+    <Typography>LOADING ...</Typography>
+  ) : (
+    <TaskList tasks={tasks} />
+  )
 }
 
 export default Tasks

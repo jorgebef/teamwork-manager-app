@@ -110,11 +110,11 @@ const TaskList = ({ tasks }: ITaskListProps) => {
     e: React.SyntheticEvent
   ) => {
     e.stopPropagation()
-    if (!task) return
+    if (!task || !user) return
     setTaskDelModal(false)
-    const deleteRes = await deleteTask(task.id).then(r => r)
+    const deleteRes = await deleteTask(task.id, user.uid).then(r => r)
     // alert(`Delete ${docRef.id} successfully`)
-    alertShow(`Successfully deleted task id ${deleteRes?.id} !!`, 'error')
+    alertShow(`Successfully deleted task id ${deleteRes?.taskId} !!`, 'error')
   }
 
   const CustomRow = styled(Box)({

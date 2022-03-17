@@ -5,24 +5,43 @@ export interface ITask {
   title: string | null
   createdBy: string | undefined
   description: string | null
-  asignee: string | null
+  assignedTo: string | null
   parent: string | null
   createdAt: number | FieldValue
   modifiedAt: number | FieldValue | null
   dueDate: number | null
+  completed: boolean
 }
 
 export const taskDefault: ITask = {
   title: null,
   createdBy: undefined,
   description: null,
-  asignee: null,
+  assignedTo: null,
   parent: null,
   createdAt: Date.now(),
   modifiedAt: null,
   dueDate: Date.now(),
+  completed: false
 }
 
 export interface TaskWithId extends ITask {
   id: string
+}
+
+export interface IUser {
+  uid: string
+  userName: string
+  email: string
+  profilePic: string | null
+  assignedTasks: string[]
+  createdTasks: string[]
+  teams: string[]
+}
+
+  export interface ITeam {
+  name: string
+  admins: string[]
+  members: string[]
+  description: string
 }

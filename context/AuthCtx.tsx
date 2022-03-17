@@ -8,6 +8,15 @@ import {
   signInWithPopup,
 } from 'firebase/auth'
 import { auth, googleProvider } from '../firebase/config'
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  query,
+  setDoc,
+} from 'firebase/firestore'
+import { db } from '../firebase/config'
 
 export interface IAuthCtx {
   localAuth: boolean
@@ -57,9 +66,25 @@ export const AuthCtxProvider: React.FC = ({ children }) => {
     return await signInAnonymously(auth)
   }
 
-  const loginGoogle = () => {
+  const loginGoogle = async () => {
     signInWithPopup(auth, googleProvider)
-      .then(res => {
+      .then(async res => {
+        const userDocRef = doc(db, 'users', res.user.uid)
+        const userSnap = await getDoc(userDocRef)
+
+        if (userSnap.exists()) {
+          console.log('Existing user: ' + res.user.email)
+        } else {
+          await setDoc(userDocRef, {
+            uid: res.user.uid,
+            userName: res.user.displayName,
+            email: res.user.email,
+            profilePic: res.user.photoURL,
+            assignedTasks: [],
+            createdTasks: [],
+            teams: [],
+          })
+        }
         setUser(res.user)
       })
       .catch(err => console.log('error: ' + err))
