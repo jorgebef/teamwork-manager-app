@@ -1,38 +1,47 @@
-import { useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   collection,
+  documentId,
   onSnapshot,
-  orderBy,
   query,
-  QuerySnapshot,
   where,
 } from 'firebase/firestore'
 import { db } from '../../firebase/config'
-import { TaskWithId, ITask } from '../../util/types'
+import { TaskWithId } from '../../util/types'
 import TaskList from '../../components/TaskList'
 import { useAuthCtx } from '../../context/AuthCtx'
+import { fetchUserTasks } from '../../firebase/task'
 
 const Tasks = () => {
   const [tasks, setTasks] = useState<TaskWithId[]>([])
+  const [taskList, setTaskList] = useState<string[] | null>(null)
   const { user } = useAuthCtx()
 
   useEffect(() => {
     if (!user) return
 
+    const userCollectionRef = collection(db, 'users')
+
+    const q = query(userCollectionRef, where(documentId(), '==', user.uid))
+    const unsubscribe = onSnapshot(q, querySnapshot => {
+      const tasks: string[] = []
+      querySnapshot.forEach(doc => {
+        tasks.push(...doc.data().createdTasks)
+        tasks.push(...doc.data().assignedTasks)
+      })
+      setTaskList(tasks)
+    })
+    return unsubscribe
+  }, [])
+
+  useEffect(() => {
+    console.log(taskList)
+    if (!user || !taskList || taskList?.length == 0) return
+
     const collectionRef = collection(db, 'tasks')
+    const q = query(collectionRef, where(documentId(), 'in', taskList))
 
-    // const q = query(collectionRef)
-    // const q = query(collectionRef, orderBy('dueDate', 'desc'))
-    const q1 = query(
-      collectionRef,
-      where('createdBy', '==', user.uid),
-    )
-    const q2 = query(
-      collectionRef,
-      where('asignee', '==', user.uid),
-    )
-
-    const unsubscribe = onSnapshot(q1, QuerySnapshot => {
+    const unsubscribe = onSnapshot(q, QuerySnapshot => {
       setTasks(
         QuerySnapshot.docs.map<TaskWithId>(doc => ({
           ...doc.data(),
@@ -40,7 +49,7 @@ const Tasks = () => {
           title: doc.data().title,
           createdBy: user?.uid ? user.uid : '',
           description: doc.data().description,
-          asignee: doc.data().asignee,
+          assignedTo: doc.data().assignedTo,
           parent: doc.data().parentProject,
           // createdAt: doc.data().createdAt.toDate().getTime(),
           // modifiedAt: doc.data().modifiedAt.toDate().getTime(),
@@ -48,12 +57,13 @@ const Tasks = () => {
           createdAt: doc.data().createdAt,
           modifiedAt: doc.data().modifiedAt,
           dueDate: doc.data().dueDate,
+          completed: doc.data().completed,
         }))
       )
     })
 
     return unsubscribe
-  }, [])
+  }, [taskList])
 
   return <TaskList tasks={tasks} />
 }
