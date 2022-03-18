@@ -37,7 +37,11 @@ const Tasks = () => {
 
   useEffect(() => {
     console.log(taskList)
-    if (!user || !taskList || taskList?.length == 0) return
+    if (!user || !taskList) return
+    if (taskList?.length == 0) {
+      setLoading(false)
+      return
+    }
 
     const collectionRef = collection(db, 'tasks')
     const q = query(collectionRef, where(documentId(), 'in', taskList))
@@ -69,7 +73,7 @@ const Tasks = () => {
 
   return loading ? (
     <Typography>LOADING ...</Typography>
-  ) : (
+  )  : (
     <TaskList tasks={tasks} />
   )
 }

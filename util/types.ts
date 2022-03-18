@@ -22,7 +22,7 @@ export const taskDefault: ITask = {
   createdAt: Date.now(),
   modifiedAt: null,
   dueDate: Date.now(),
-  completed: false
+  completed: false,
 }
 
 export interface TaskWithId extends ITask {
@@ -39,9 +39,13 @@ export interface IUser {
   teams: string[]
 }
 
-  export interface ITeam {
+export interface ITeam {
   name: string
   admins: string[]
   members: string[]
   description: string
+}
+
+export interface ITeamWithId extends ITeam {
+  id: string
 }

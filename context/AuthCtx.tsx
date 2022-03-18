@@ -9,11 +9,8 @@ import {
 } from 'firebase/auth'
 import { auth, googleProvider } from '../firebase/config'
 import {
-  addDoc,
-  collection,
   doc,
   getDoc,
-  query,
   setDoc,
 } from 'firebase/firestore'
 import { db } from '../firebase/config'
