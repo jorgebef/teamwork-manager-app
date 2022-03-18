@@ -1,60 +1,28 @@
-import { Box, Container } from "@mui/material";
-import CustomDrawer from "./CustomDrawer";
-import NavBar from "./NavBar";
-import Footer from "./Footer";
-import { useRouter } from "next/router";
+import { Box, Container } from '@mui/material'
+import CustomDrawer from './CustomDrawer'
+import NavBar from './NavBar'
+import Footer from './Footer'
 
 type LayoutProps = {
-  children: React.ReactNode;
-};
+  children: React.ReactNode
+}
 
 const Layout = ({ children }: LayoutProps) => {
-  const router = useRouter();
-
-  if (router.asPath === "/") {
-    return (
-      <>
-          <NavBar />
-          <Container
-            sx={{
-              pt: 10,
-              display: "flex",
-              justifyContent: "center",
-              minHeight: "100vh",
-              boxSizing: "border-box"
-            }}
-          >
-            {children}
-          </Container>
-          <Footer />
-      </>
-    );
-  }
   return (
     <>
-        <NavBar />
-        <Container
-          sx={{
-            pt: 10,
-            display: "flex",
-            justifyContent: "center",
-            minHeight: "100vh",
-            boxSizing: "border-box"
-          }}
-        >
-          <CustomDrawer />
-          <Container
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              boxSizing: "border-box"
-            }}
-          >
-            {children}
-          </Container>
-        </Container>
+      <NavBar />
+      <Box
+        sx={{
+          pt: 10,
+          display: 'flex',
+          minHeight: '100vh',
+        }}
+      >
+        <CustomDrawer />
+        <Container>{children}</Container>
+      </Box>
     </>
-  );
-};
+  )
+}
 
-export default Layout;
+export default Layout

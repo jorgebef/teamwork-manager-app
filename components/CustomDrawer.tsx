@@ -73,16 +73,16 @@ const DrawerList = () => {
         ))}
       </List>
       <Divider />
-      <List>
-        {['Test 1', 'Test 2', 'Test 3'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>
-              {index % 2 === 0 ? <InboxRounded /> : <MailRounded />}
-            </ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
+      {/* <List> */}
+      {/*   {['Test 1', 'Test 2', 'Test 3'].map((text, index) => ( */}
+      {/*     <ListItem button key={text}> */}
+      {/*       <ListItemIcon> */}
+      {/*         {index % 2 === 0 ? <InboxRounded /> : <MailRounded />} */}
+      {/*       </ListItemIcon> */}
+      {/*       <ListItemText primary={text} /> */}
+      {/*     </ListItem> */}
+      {/*   ))} */}
+      {/* </List> */}
     </>
   )
 }

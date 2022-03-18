@@ -100,6 +100,8 @@ const NavBar: React.FC = () => {
                     <Image
                       alt={user.displayName ? user.displayName : undefined}
                       src={user.photoURL ? user.photoURL : profile3}
+                      layout='fill'
+                      // src={profile3}
                       quality={20}
                     />
                   </Avatar>

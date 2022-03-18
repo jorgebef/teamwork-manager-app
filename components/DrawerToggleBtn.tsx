@@ -15,7 +15,8 @@ const DrawerToggleBtn = () => {
         display:
           // -------------------- LOCAL USER
           // localAuth && useRouter().asPath !== '/'
-          user && useRouter().asPath !== '/'
+          // user && useRouter().asPath !== '/'
+          user 
             ? { xs: 'flex', md: 'none' }
             : 'none',
       }}

@@ -10,7 +10,13 @@ import {
   TextFieldProps,
   AlertColor,
 } from '@mui/material'
-import { ITask, taskDefault, TaskWithId } from '../util/types'
+import {
+  ITask,
+  ITeamWithId,
+  IUser,
+  taskDefault,
+  TaskWithId,
+} from '../util/types'
 import { CancelRounded, CheckCircleRounded } from '@mui/icons-material'
 
 import DateAdapter from '@mui/lab/AdapterMoment'
@@ -20,6 +26,14 @@ import moment from 'moment'
 import { useAlertCtx } from '../context/AlertCtx'
 import { createTask } from '../firebase/task'
 import { useAuthCtx } from '../context/AuthCtx'
+import {
+  collection,
+  documentId,
+  onSnapshot,
+  query,
+  where,
+} from 'firebase/firestore'
+import { db } from '../firebase/config'
 
 interface ITaskFormModalProps {
   taskEdit: TaskWithId | null
@@ -38,8 +52,25 @@ const TaskForm = ({
   const [errors, setErrors] = useState<Record<string, string | null> | null>(
     null
   )
+  const [userData, setUserData] = useState<Partial<IUser> | null>(null)
   const { alertShow } = useAlertCtx()
   const { user } = useAuthCtx()
+
+  useEffect(() => {
+    if (!user) return
+    const userCollectionRef = collection(db, 'users')
+    const q = query(userCollectionRef, where(documentId(), '==', user.uid))
+    const unsubscribe = onSnapshot(q, querySnapshot => {
+      querySnapshot.forEach(doc => {
+        setUserData({
+          uid: doc.data().uid,
+          teams: doc.data().teams,
+        })
+      })
+    })
+    return unsubscribe
+  }, [])
+
 
   // Capture taskEdit, which will be different for each task for which
   // we press the Edit button since the props will be different
@@ -100,11 +131,11 @@ const TaskForm = ({
     e.preventDefault()
     if (!errorCheck()) return
     handleClose(e)
-    if(!taskTemp || !user) return
+    if (!taskTemp || !user) return
     const submitRes =
       action === 'create'
-        ? await createTask(taskTemp,user.uid).then(r => r)
-        : await createTask(taskTemp,user.uid).then(r => r)
+        ? await createTask(taskTemp, user.uid).then(r => r)
+        : await createTask(taskTemp, user.uid).then(r => r)
     alertShow(
       `Todo id:${submitRes?.docRef.id}, named: ${
         submitRes?.newTask.title
@@ -185,9 +216,31 @@ const TaskForm = ({
           </LocalizationProvider>
 
           <Autocomplete
+            id='parent'
+            fullWidth
+            size='small'
+            options={userData?.teams ? userData.teams : []}
+            value={taskTemp?.parent}
+            onChange={(e, newValue) =>
+              handleAutoCompUpdate(e, newValue, 'parent')
+            }
+            renderInput={(params: any) => (
+              <TextField
+                {...params}
+                value={taskTemp?.parent}
+                error={Boolean(errors?.parent)}
+                helperText={errors?.parent}
+                label='Parent Project'
+                variant='outlined'
+                size='small'
+              />
+            )}
+          />
+
+          <Autocomplete
             id='asignee'
-            disableCloseOnSelect
             freeSolo
+            disabled={taskTemp?.parent ? false : true}
             value={taskTemp?.assignedTo}
             options={['Test2', 'Test3', 'Test 4']}
             onChange={(e, newValue) =>
@@ -200,28 +253,6 @@ const TaskForm = ({
                 error={Boolean(errors?.asignee)}
                 helperText={errors?.asignee}
                 label='Asignee'
-                variant='outlined'
-                size='small'
-              />
-            )}
-          />
-
-          <Autocomplete
-            id='parent'
-            fullWidth
-            size='small'
-            options={['Project1', 'Project2', 'Project3']}
-            value={taskTemp?.parent}
-            onChange={(e, newValue) =>
-              handleAutoCompUpdate(e, newValue, 'parent')
-            }
-            renderInput={(params: any) => (
-              <TextField
-                {...params}
-                value={taskTemp?.parent}
-                error={Boolean(errors?.parent)}
-                helperText={errors?.parent}
-                label='Parent Project'
                 variant='outlined'
                 size='small'
               />
