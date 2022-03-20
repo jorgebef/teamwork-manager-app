@@ -10,7 +10,8 @@ import { Auth, getAuth, GoogleAuthProvider } from 'firebase/auth'
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: 'AIzaSyDqa1oD7sJ4PZimRnssXKzaCGzlSd_gapw',
-  authDomain: 'teamwork-manager-app.firebaseapp.com',
+  // authDomain: 'teamwork-manager-app.firebaseapp.com',
+  authDomain: 'teamwork-manager-app.vercel.app',
   projectId: 'teamwork-manager-app',
   storageBucket: 'teamwork-manager-app.appspot.com',
   messagingSenderId: '991996102934',
