@@ -1,7 +1,10 @@
 import { Box, Button, Container, Typography } from '@mui/material'
 import { GetServerSideProps } from 'next'
+import { useAuthCtx } from '../context/AuthCtx'
 
 const TestPage: React.FC = () => {
+  const { user } = useAuthCtx()
+
   return (
     <Container>
       <Typography variant='h3'>Dashboard</Typography>

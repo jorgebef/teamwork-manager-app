@@ -26,7 +26,6 @@ import {
 } from '@mui/icons-material'
 import moment from 'moment'
 import { styled } from '@mui/system'
-import Image from 'next/image'
 import profile2 from '../public/profile1.jpg'
 import TaskForm from './TaskFormModal'
 import { useAlertCtx } from '../context/AlertCtx'

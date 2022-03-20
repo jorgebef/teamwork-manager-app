@@ -16,7 +16,6 @@ import {
 } from '@mui/material'
 import { Logout } from '@mui/icons-material'
 import Link from 'next/link'
-import Image from 'next/image'
 import SignInBtn from './SignInBtn'
 import DrawerToggleBtn from './DrawerToggleBtn'
 import { useAuthCtx } from './../context/AuthCtx'
@@ -94,17 +93,10 @@ const NavBar: React.FC = () => {
               <Tooltip title='Account'>
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <Avatar
+                    alt={user.displayName ? user.displayName : undefined}
                     src={user.photoURL ? user.photoURL : undefined}
                     sx={{ height: 50, width: 50 }}
-                  >
-                    <Image
-                      alt={user.displayName ? user.displayName : undefined}
-                      src={user.photoURL ? user.photoURL : profile3}
-                      layout='fill'
-                      // src={profile3}
-                      quality={20}
-                    />
-                  </Avatar>
+                  ></Avatar>
                 </IconButton>
               </Tooltip>
               <Menu
