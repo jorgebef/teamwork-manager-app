@@ -8,16 +8,15 @@ import {
   serverTimestamp,
   updateDoc,
 } from 'firebase/firestore'
-import { ITask } from '../util/types'
+import { ITask, TaskWithId } from '../util/types'
 import { db } from './config'
 
-export const createTask = async (task: ITask | null, uid: string) => {
-  if (!task) return
+export const createTask = async (task: ITask, uid: string) => {
   const collectionRef = collection(db, 'tasks')
   // const { ['id']: _, ...newTask }: TaskWithId = task
-  const { ...newTask }: ITask = task
-  const docRef = await addDoc(collectionRef, {
-    ...newTask,
+  const { ...taskData }: ITask = task
+  const taskDocRef = await addDoc(collectionRef, {
+    ...taskData,
     createdAt: serverTimestamp(),
     modifiedAt: serverTimestamp(),
   })
@@ -25,15 +24,25 @@ export const createTask = async (task: ITask | null, uid: string) => {
   const userDocRef = doc(db, 'users', uid)
   const userDocSnap: DocumentData = await getDoc(userDocRef)
   const tasksPrev: string[] = userDocSnap.data()?.createdTasks
-  await updateDoc(userDocRef, 'createdTasks', [...tasksPrev, docRef.id])
+  await updateDoc(userDocRef, 'createdTasks', [...tasksPrev, taskDocRef.id])
 
-  return { docRef, newTask }
+  return { taskDocRef, taskData }
+}
+
+export const editTask = async (task: TaskWithId) => {
+  const { ['id']: taskId, ...taskData }: TaskWithId = task
+  const taskDocRef = doc(db, 'tasks', taskId)
+  await updateDoc(taskDocRef, {
+    ...taskData,
+    modifiedAt: serverTimestamp(),
+  })
+  return { taskDocRef, taskData }
 }
 
 export const deleteTask = async (taskId: string | null, uid: string) => {
   if (!taskId) return
-  const docRef = doc(db, 'tasks', taskId)
-  await deleteDoc(docRef)
+  const taskDocRef = doc(db, 'tasks', taskId)
+  await deleteDoc(taskDocRef)
 
   const userDocRef = doc(db, 'users', uid)
   const userDocSnap = await getDoc(userDocRef)
@@ -41,5 +50,5 @@ export const deleteTask = async (taskId: string | null, uid: string) => {
   const updatedTasks = tasksPrev.filter(t => t !== taskId)
   await updateDoc(userDocRef, 'createdTasks', [...updatedTasks])
 
-  return { docRef, taskId }
+  return { taskDocRef, taskId }
 }
