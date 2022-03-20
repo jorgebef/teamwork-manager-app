@@ -11,8 +11,7 @@ import React, { useEffect, useState } from 'react'
 import TeamList from '../../components/TeamList'
 import { useAuthCtx } from '../../context/AuthCtx'
 import { db } from '../../firebase/config'
-import {  ITeamWithId } from '../../util/types'
-
+import { ITeamWithId } from '../../util/types'
 
 const Teams: NextPage = () => {
   const [teamList, setTeamList] = useState<string[] | null>(null)

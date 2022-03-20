@@ -19,27 +19,13 @@ interface ITaskDelModalProps {
   handleClose: (e: React.SyntheticEvent, reason?: string) => void
 }
 
-export const TaskDelModal = ({
+ const TaskDelModal = ({
   open,
   taskEdit,
   handleClose,
 }: ITaskDelModalProps) => {
-  const {
-    // alertOpen,
-    setAlertOpen,
-    // alertType,
-    setAlertType,
-    // alertMsg,
-    setAlertMsg,
-  } = useAlertCtx()
-  const theme = useTheme()
+  const { alertShow } = useAlertCtx()
   const { user } = useAuthCtx()
-
-  const alertShow = (msg: string, type?: AlertColor) => {
-    if (type) setAlertType(type)
-    setAlertMsg(msg)
-    setAlertOpen(true)
-  }
 
   const handleDelete = async (
     task: TaskWithId | null,
