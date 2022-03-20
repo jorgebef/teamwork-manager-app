@@ -34,11 +34,11 @@ const linkList: LinkListItemT[] = [
     path: '/teams',
     icon: <GroupsRounded />,
   },
-  {
-    title: 'Projects',
-    path: '/projects',
-    icon: <FolderRounded />,
-  },
+  // {
+  //   title: 'Projects',
+  //   path: '/projects',
+  //   icon: <FolderRounded />,
+  // },
   {
     title: 'Tasks',
     path: '/tasks',
@@ -54,7 +54,7 @@ const DrawerList = () => {
       <Toolbar />
       <List>
         {linkList.map(({ title, path, icon }) => (
-          <Link href={path} passHref>
+          <Link key={title} href={path} passHref>
             <ListItem
               sx={
                 router.asPath === path
@@ -137,7 +137,7 @@ const PermanentDrawer = () => {
 }
 
 const CustomDrawer: React.FC = () => {
-  const { localAuth, user } = useAuthCtx()
+  const {  user } = useAuthCtx()
 
   // if (!localAuth) return null
   if (!user) return null

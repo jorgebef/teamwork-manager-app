@@ -1,9 +1,9 @@
-import { Box, Button, Typography } from '@mui/material'
+import { Box, Button, Container, Typography } from '@mui/material'
 import { GetServerSideProps } from 'next'
 
 const TestPage: React.FC = () => {
   return (
-    <>
+    <Container>
       <Typography variant='h3'>Dashboard</Typography>
       <Button type='button' variant='contained'>
         Server Side Rendered Button
@@ -19,7 +19,7 @@ const TestPage: React.FC = () => {
       <Box>alskdjñlaksdjf</Box>
       <Box>alskdjñlaksdjf</Box>
       <Box>alskdjñlaksdjf</Box>
-    </>
+    </Container>
   )
 }
 

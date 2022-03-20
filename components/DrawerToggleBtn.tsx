@@ -6,7 +6,7 @@ import { CloseRounded } from '@mui/icons-material'
 import { useRouter } from 'next/router'
 
 const DrawerToggleBtn = () => {
-  const { localAuth, user, openDrawer, setOpenDrawer } = useAuthCtx()
+  const {  user, openDrawer, setOpenDrawer } = useAuthCtx()
 
   return (
     <Box

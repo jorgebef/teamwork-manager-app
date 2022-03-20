@@ -25,7 +25,7 @@ import profile3 from '../public/profile3.jpg'
 
 const NavBar: React.FC = () => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
-  const { localAuth, setLocalAuth, user, setUser, logout } = useAuthCtx()
+  const { user, setUser, logout } = useAuthCtx()
   const router = useRouter()
   const theme = useTheme()
 
@@ -35,10 +35,10 @@ const NavBar: React.FC = () => {
   //   router.push('/dashboard')
   // }, [localAuth])
 
-  useEffect(() => {
-    if (!user) return
-    router.push('/dashboard')
-  }, [user])
+  // useEffect(() => {
+  //   if (!user) return
+  //   router.push('/dashboard')
+  // }, [user])
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget)
@@ -109,7 +109,7 @@ const NavBar: React.FC = () => {
               </Tooltip>
               <Menu
                 sx={{
-                  mt: 6,
+                  mt: 8,
                   '& .MuiAvatar-root': {
                     width: 32,
                     height: 32,
@@ -131,12 +131,12 @@ const NavBar: React.FC = () => {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-                <Link href='/dashboard' passHref>
-                  <MenuItem key={'dashboard'} onClick={handleCloseUserMenu}>
-                    <Avatar /> Dashboard
-                  </MenuItem>
-                </Link>
-                <Divider />
+                {/* <Link href='/dashboard' passHref> */}
+                {/*   <MenuItem key={'dashboard'} onClick={handleCloseUserMenu}> */}
+                {/*     <Avatar /> Dashboard */}
+                {/*   </MenuItem> */}
+                {/* </Link> */}
+                {/* <Divider /> */}
                 <MenuItem key={'signout'} onClick={handleSignOut}>
                   <ListItemIcon>
                     <Logout fontSize='small' color='error' />

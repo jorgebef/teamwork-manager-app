@@ -33,7 +33,7 @@ export interface IUser {
   uid: string
   userName: string
   email: string
-  profilePic: string | null
+  profilePic: string
   assignedTasks: string[]
   createdTasks: string[]
   teams: string[]
@@ -48,4 +48,11 @@ export interface ITeam {
 
 export interface ITeamWithId extends ITeam {
   id: string
+}
+
+export const teamDefault: ITeam = {
+  name: '',
+  description: '',
+  admins: [],
+  members: [],
 }

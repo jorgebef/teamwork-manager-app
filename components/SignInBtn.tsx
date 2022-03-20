@@ -19,11 +19,7 @@ const Btn = styled.button<IButtonProps>`
 `
 
 const SignInBtn: React.FC = ({ children }) => {
-  const { setLocalAuth, loginGoogle } = useAuthCtx()
-
-  const handleSignIn = async () => {
-    setLocalAuth(true)
-  }
+  const { loginGoogle } = useAuthCtx()
 
   return (
     <Button

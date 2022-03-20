@@ -8,23 +8,19 @@ import {
   signInWithPopup,
 } from 'firebase/auth'
 import { auth, googleProvider } from '../firebase/config'
-import {
-  doc,
-  getDoc,
-  setDoc,
-} from 'firebase/firestore'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { db } from '../firebase/config'
+import { useRouter } from 'next/router'
+import { Typography } from '@mui/material'
 
 export interface IAuthCtx {
-  localAuth: boolean
-  setLocalAuth: React.Dispatch<React.SetStateAction<boolean>>
   openDrawer: boolean
   setOpenDrawer: React.Dispatch<React.SetStateAction<boolean>>
   user: User | null
   setUser: React.Dispatch<React.SetStateAction<any>>
   login: () => Promise<UserCredential>
   logout: () => void
-  loginAnon: () => Promise<any>
+  // loginAnon: () => Promise<any>
   loginGoogle: () => void
 }
 
@@ -40,24 +36,21 @@ export const AuthCtx = createContext<IAuthCtx>({} as IAuthCtx)
 // })
 
 export const AuthCtxProvider: React.FC = ({ children }) => {
-  const [localAuth, setLocalAuth] = useState<boolean>(false)
   const [openDrawer, setOpenDrawer] = useState<boolean>(false)
   const [user, setUser] = useState<User | null>(null)
+  const router = useRouter()
 
   useEffect(() => {
+    if (!user && router.asPath !== '/') {
+      router.push('/')
+    }
+
     const unsubscribe = onAuthStateChanged(auth, user => {
-      if (user) {
-        setUser(user)
-      } else {
-        // setUser(null)
-        signInAnonymously(auth).catch(err => {
-          console.log(err)
-        })
-      }
+      setUser(user)
       console.log(user?.uid)
     })
     return unsubscribe()
-  }, [])
+  }, [router, user])
 
   const login = async () => {
     return await signInAnonymously(auth)
@@ -87,27 +80,25 @@ export const AuthCtxProvider: React.FC = ({ children }) => {
       .catch(err => console.log('error: ' + err))
   }
 
-  const loginAnon = async () => {
-    return await signInAnonymously(auth)
-  }
+  // const loginAnon = async () => {
+  //   return await signInAnonymously(auth)
+  // }
 
   const logout = async () => {
-    setUser(null)
     await signOut(auth)
+    setUser(null)
   }
 
   return (
     <AuthCtx.Provider
       value={{
-        localAuth,
-        setLocalAuth,
         openDrawer,
         setOpenDrawer,
         user,
         setUser,
         login,
         logout,
-        loginAnon,
+        // loginAnon,
         loginGoogle,
       }}
     >

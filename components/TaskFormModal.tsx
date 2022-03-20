@@ -24,7 +24,7 @@ import LocalizationProvider from '@mui/lab/LocalizationProvider'
 import { DatePicker } from '@mui/lab'
 import moment from 'moment'
 import { useAlertCtx } from '../context/AlertCtx'
-import { createTask } from '../firebase/task'
+import { createTask, editTask } from '../firebase/task'
 import { useAuthCtx } from '../context/AuthCtx'
 import {
   collection,
@@ -37,14 +37,14 @@ import { db } from '../firebase/config'
 
 interface ITaskFormModalProps {
   taskEdit: TaskWithId | null
-  action: 'create' | 'edit'
+  // action: 'create' | 'edit'
   open: boolean
   handleClose: (e: React.SyntheticEvent, reason?: string) => void
 }
 
 const TaskForm = ({
   taskEdit,
-  action,
+  // action,
   open,
   handleClose,
 }: ITaskFormModalProps) => {
@@ -52,15 +52,23 @@ const TaskForm = ({
   const [errors, setErrors] = useState<Record<string, string | null> | null>(
     null
   )
-  const [userData, setUserData] = useState<Partial<IUser> | null>(null)
+  const [userData, setUserData] = useState<Partial<IUser>>({})
+  const [teamsData, setTeamsData] = useState<Partial<ITeamWithId>[]>([])
+  const [membersData, setMembersData] = useState<Partial<IUser>[]>([])
   const { alertShow } = useAlertCtx()
   const { user } = useAuthCtx()
 
   useEffect(() => {
     if (!user) return
+
+    if (!taskEdit) {
+      setTaskTemp({ ...taskDefault, createdBy: user?.uid })
+    } else {
+      setTaskTemp(taskEdit)
+    }
     const userCollectionRef = collection(db, 'users')
-    const q = query(userCollectionRef, where(documentId(), '==', user.uid))
-    const unsubscribe = onSnapshot(q, querySnapshot => {
+    const qUser = query(userCollectionRef, where(documentId(), '==', user.uid))
+    const unsubscribe = onSnapshot(qUser, querySnapshot => {
       querySnapshot.forEach(doc => {
         setUserData({
           uid: doc.data().uid,
@@ -69,26 +77,75 @@ const TaskForm = ({
       })
     })
     return unsubscribe
-  }, [])
+  }, [user, taskEdit])
 
+  // // Capture taskEdit, which will be different for each task for which
+  // // we press the Edit button since the props will be different
+  // // It is bad practice to initialize state with values passed from props since
+  // // if the value changes in the parent component for whatever reason, the child
+  // // would be using out-of-date values
+  // //
+  // // Additionally, by implementing the task that is being edited both in parent
+  // // component and child, we can have the app remember the task we were editing
+  // // even if we close the Modal and changes will be there if we reopen the same
+  // // task to edit
+  // useEffect(() => {
+  //   if (!taskEdit) {
+  //     setTaskTemp({ ...taskDefault, createdBy: user?.uid })
+  //   } else {
+  //     setTaskTemp(taskEdit)
+  //   }
+  // }, [taskEdit])
 
-  // Capture taskEdit, which will be different for each task for which
-  // we press the Edit button since the props will be different
-  // It is bad practice to initialize state with values passed from props since
-  // if the value changes in the parent component for whatever reason, the child
-  // would be using out-of-date values
-  //
-  // Additionally, by implementing the task that is being edited both in parent
-  // component and child, we can have the app remember the task we were editing
-  // even if we close the Modal and changes will be there if we reopen the same
-  // task to edit
   useEffect(() => {
-    if (!taskEdit) {
-      setTaskTemp({ ...taskDefault, createdBy: user?.uid })
-    } else {
-      setTaskTemp(taskEdit)
-    }
-  }, [taskEdit])
+    if (!userData || !userData.teams || userData.teams.length == 0) return
+    const teamsCollectionRef = collection(db, 'teams')
+    const qTeams = query(
+      teamsCollectionRef,
+      where(documentId(), 'in', userData.teams)
+    )
+    const unsubscribe = onSnapshot(qTeams, querySnapshot => {
+      setTeamsData(
+        querySnapshot.docs.map<Partial<ITeamWithId>>(doc => ({
+          ...doc.data(),
+          id: doc.id,
+          name: doc.data().name,
+          members: doc.data().members,
+        }))
+      )
+    })
+    return unsubscribe
+  }, [userData])
+
+  useEffect(() => {
+    if (!teamsData) return
+    const members: string[] = []
+    teamsData.map(team => {
+      if (team.members) members.push(...team.members)
+    })
+    if (members.length == 0) return
+    const membersCollectionRef = collection(db, 'users')
+    const qMembers = query(
+      membersCollectionRef,
+      where(documentId(), 'in', members)
+    )
+    const unsubscribe = onSnapshot(qMembers, querySnapshot => {
+      setMembersData(
+        querySnapshot.docs.map<Partial<IUser>>(doc => ({
+          ...doc.data(),
+          uid: doc.id,
+          userName: doc.data().userName,
+          email: doc.data().email,
+          profilePic: doc.data().profilePic,
+        }))
+      )
+    })
+    return unsubscribe
+  }, [teamsData])
+
+  useEffect(() => {
+    console.log(membersData)
+  }, [membersData])
 
   const handleTextUpdate = (e: React.ChangeEvent<HTMLInputElement>) => {
     // console.log(taskTemp)
@@ -103,7 +160,7 @@ const TaskForm = ({
 
   const handleAutoCompUpdate = (
     e: React.SyntheticEvent<Element, Event>,
-    newValue: string | null,
+    newValue: string | undefined | null,
     property: keyof ITask
   ) => {
     if (!taskTemp) return
@@ -116,12 +173,14 @@ const TaskForm = ({
   }
 
   const errorCheck = () => {
+    // if (!taskTemp?.assignedTo)
+    // setTaskTemp({ ...taskTemp, assignedTo: user?.uid })
     const temp: Record<string, string | null> = {
       title: taskTemp?.title ? null : 'Must have Title',
       description: taskTemp?.description ? null : 'Must have description',
-      asignee: taskTemp?.assignedTo ? null : 'Must be assigned',
+      // asignee: taskTemp?.assignedTo ? null : 'Must be assigned',
       dueDate: taskTemp?.dueDate ? null : 'Must assign due date',
-      parent: taskTemp?.parent ? null : 'Must form part of a project',
+      // parent: taskTemp?.parent ? null : 'Must form part of a project',
     }
     setErrors({ ...temp })
     return Object.values(temp).every(v => v === null)
@@ -129,19 +188,29 @@ const TaskForm = ({
 
   const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault()
-    if (!errorCheck()) return
+    if (!errorCheck() || !taskTemp || !user) return
+    if (!taskEdit) {
+      const submitRes = await createTask(taskTemp, user.uid).then(r => r)
+      alertShow(
+        `Todo id:${submitRes?.taskDocRef.id}, named: ${
+          submitRes?.taskData.title
+        } created at ${Date.now()} successfully`,
+        'success'
+      )
+    } else if (taskEdit === taskTemp) {
+      return
+    } else {
+      const submitRes = await editTask({ id: taskEdit.id, ...taskTemp }).then(
+        r => r
+      )
+      alertShow(
+        `Todo id:${submitRes?.taskDocRef.id}, named: ${
+          submitRes?.taskData.title
+        } edited at ${Date.now()} successfully`,
+        'info'
+      )
+    }
     handleClose(e)
-    if (!taskTemp || !user) return
-    const submitRes =
-      action === 'create'
-        ? await createTask(taskTemp, user.uid).then(r => r)
-        : await createTask(taskTemp, user.uid).then(r => r)
-    alertShow(
-      `Todo id:${submitRes?.docRef.id}, named: ${
-        submitRes?.newTask.title
-      } created at ${Date.now()} successfully`,
-      'success'
-    )
     setTaskTemp(null)
   }
 
@@ -219,7 +288,11 @@ const TaskForm = ({
             id='parent'
             fullWidth
             size='small'
-            options={userData?.teams ? userData.teams : []}
+            options={teamsData.map(t => t.id)}
+            getOptionLabel={option => {
+              const team = teamsData.find(t => t.id === option)
+              return team?.name ? team.name : ''
+            }}
             value={taskTemp?.parent}
             onChange={(e, newValue) =>
               handleAutoCompUpdate(e, newValue, 'parent')
@@ -238,11 +311,15 @@ const TaskForm = ({
           />
 
           <Autocomplete
-            id='asignee'
-            freeSolo
+            id='assignedTo'
+            // freeSolo
             disabled={taskTemp?.parent ? false : true}
             value={taskTemp?.assignedTo}
-            options={['Test2', 'Test3', 'Test 4']}
+            options={membersData.map(m => m.uid)}
+            getOptionLabel={option => {
+              const member = membersData.find(m => m.uid === option)
+              return member?.userName ? member.userName : ''
+            }}
             onChange={(e, newValue) =>
               handleAutoCompUpdate(e, newValue, 'assignedTo')
             }

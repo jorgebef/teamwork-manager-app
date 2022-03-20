@@ -11,8 +11,9 @@ import { TaskWithId } from '../../util/types'
 import TaskList from '../../components/TaskList'
 import { useAuthCtx } from '../../context/AuthCtx'
 import { Typography } from '@mui/material'
+import { NextPage } from 'next'
 
-const Tasks = () => {
+const Tasks: NextPage = () => {
   const [tasks, setTasks] = useState<TaskWithId[]>([])
   const [taskList, setTaskList] = useState<string[] | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
@@ -33,15 +34,16 @@ const Tasks = () => {
       setTaskList(tasks)
     })
     return unsubscribe
-  }, [])
+  }, [user])
 
   useEffect(() => {
-    console.log(taskList)
     if (!user || !taskList) return
     if (taskList?.length == 0) {
       setLoading(false)
       return
     }
+    console.log('Tasklist:')
+    console.log(taskList)
 
     const collectionRef = collection(db, 'tasks')
     const q = query(collectionRef, where(documentId(), 'in', taskList))
@@ -55,7 +57,7 @@ const Tasks = () => {
           createdBy: user?.uid ? user.uid : '',
           description: doc.data().description,
           assignedTo: doc.data().assignedTo,
-          parent: doc.data().parentProject,
+          parent: doc.data().parent,
           // createdAt: doc.data().createdAt.toDate().getTime(),
           // modifiedAt: doc.data().modifiedAt.toDate().getTime(),
           // dueDate: doc.data().dueDate.toDate().getTime(),
@@ -69,11 +71,11 @@ const Tasks = () => {
     })
 
     return unsubscribe
-  }, [taskList])
+  }, [user, taskList])
 
   return loading ? (
     <Typography>LOADING ...</Typography>
-  )  : (
+  ) : (
     <TaskList tasks={tasks} />
   )
 }

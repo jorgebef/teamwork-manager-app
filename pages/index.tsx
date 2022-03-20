@@ -1,61 +1,80 @@
-import type { NextPage } from "next";
-import Head from "next/head";
-import React from "react";
-import styles from "../styles/Home.module.css";
+import {
+  Box,
+  Card,
+  CardContent,
+  CardMedia,
+  Container,
+  Typography,
+  useTheme,
+} from '@mui/material'
+import type { NextPage } from 'next'
+import Head from 'next/head'
+import React from 'react'
+import profile2 from '../public/profile2.jpg'
 
 const Home: NextPage = () => {
+  const theme = useTheme()
+
   return (
-    <div className={styles.container}>
+    <>
       <Head>
         <title>Teamwork Manager - Home</title>
         <meta
-          name="description"
-          content="Team project and task management app"
+          name='description'
+          content='Team project and task management app'
         />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel='icon' href='/favicon.ico' />
       </Head>
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{" "}
-          <code className={styles.code}>pages/index.tsx</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
+      <main>
+        <Container
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 4,
+            alignItems: 'center',
+            maxWidth: theme.breakpoints.values.lg,
+          }}
+        >
+          <Typography variant='h2' fontWeight={500}>
+            Team manager app
+          </Typography>
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 2,
+            }}
           >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
+            <Card>
+              <CardMedia
+                component='img'
+                alt='kitty'
+                height={250}
+                src='https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2360&q=80'
+              />
+              <CardContent>
+                <Typography>
+                  This is a sample of what should be in the index page
+                </Typography>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardMedia
+                component='img'
+                alt='kitty'
+                height={250}
+                src='https://images.unsplash.com/photo-1519052537078-e6302a4968d4?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=3540&q=80'
+              />
+              <CardContent>
+                <Typography>
+                  There is no such thing as too many cats on a website!!
+                </Typography>
+              </CardContent>
+            </Card>
+          </Box>
+        </Container>
       </main>
-    </div>
-  );
-};
+    </>
+  )
+}
 
-export default Home;
+export default Home

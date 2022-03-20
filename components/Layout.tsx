@@ -1,7 +1,7 @@
 import { Box, Container } from '@mui/material'
 import CustomDrawer from './CustomDrawer'
 import NavBar from './NavBar'
-import Footer from './Footer'
+import AlertCustom from './Alert'
 
 type LayoutProps = {
   children: React.ReactNode
@@ -21,6 +21,7 @@ const Layout = ({ children }: LayoutProps) => {
         <CustomDrawer />
         <Container>{children}</Container>
       </Box>
+      <AlertCustom />
     </>
   )
 }
