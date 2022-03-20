@@ -1,7 +1,7 @@
 import { Box, Container } from '@mui/material'
 import CustomDrawer from './CustomDrawer'
 import NavBar from './NavBar'
-import AlertCustom from './Alert'
+import AlertCustom from './AlertCustom'
 
 type LayoutProps = {
   children: React.ReactNode

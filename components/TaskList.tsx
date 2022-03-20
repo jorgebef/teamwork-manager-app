@@ -26,18 +26,14 @@ import {
 } from '@mui/icons-material'
 import moment from 'moment'
 import { styled } from '@mui/system'
-import profile2 from '../public/profile1.jpg'
 import TaskForm from './TaskFormModal'
 import { useAlertCtx } from '../context/AlertCtx'
-import AlertCustom from './Alert'
 import { deleteTask } from '../firebase/task'
 import TaskDelModal from './TaskDelModal'
 import { useAuthCtx } from '../context/AuthCtx'
 import {
-  ITask,
   ITeamWithId,
   IUser,
-  taskDefault,
   TaskWithId,
 } from '../util/types'
 import {
@@ -58,7 +54,6 @@ const TaskList = ({ tasks }: ITaskListProps) => {
   const [taskFormModal, setTaskFormModal] = useState<boolean>(false)
   const [taskDelModal, setTaskDelModal] = useState<boolean>(false)
   // const [modalCreate, setModalCreate] = useState(false)
-  const [formAction, setFormAction] = useState<'create' | 'edit'>('edit')
   const [taskEdit, setTaskEdit] = useState<TaskWithId | null>(null)
   const [optsMenuEl, setOptsMenuEl] = useState<HTMLElement | null>(null)
   const [userData, setUserData] = useState<Partial<IUser>>({})
@@ -164,7 +159,6 @@ const TaskList = ({ tasks }: ITaskListProps) => {
   }
 
   const handleOpenCreateModal = () => {
-    setFormAction('create')
     setTaskEdit(null)
     // console.log(task.modifiedAt)
     setOptsMenuEl(null)
@@ -172,7 +166,6 @@ const TaskList = ({ tasks }: ITaskListProps) => {
   }
 
   const handleOpenEditModal = (task: TaskWithId) => {
-    setFormAction('edit')
     setTaskEdit(task)
     console.log(task.modifiedAt)
     setOptsMenuEl(null)
@@ -395,7 +388,6 @@ const TaskList = ({ tasks }: ITaskListProps) => {
 
       <TaskForm
         taskEdit={taskEdit}
-        // action={formAction}
         open={taskFormModal}
         handleClose={handleCloseFormModal}
       />

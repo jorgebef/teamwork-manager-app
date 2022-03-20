@@ -37,14 +37,12 @@ import { db } from '../firebase/config'
 
 interface ITaskFormModalProps {
   taskEdit: TaskWithId | null
-  // action: 'create' | 'edit'
   open: boolean
   handleClose: (e: React.SyntheticEvent, reason?: string) => void
 }
 
 const TaskForm = ({
   taskEdit,
-  // action,
   open,
   handleClose,
 }: ITaskFormModalProps) => {
