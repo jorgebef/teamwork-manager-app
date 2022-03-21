@@ -31,11 +31,7 @@ import { useAlertCtx } from '../context/AlertCtx'
 import { deleteTask } from '../firebase/task'
 import TaskDelModal from './TaskDelModal'
 import { useAuthCtx } from '../context/AuthCtx'
-import {
-  ITeamWithId,
-  IUser,
-  TaskWithId,
-} from '../util/types'
+import { ITeamWithId, IUser, TaskWithId } from '../util/types'
 import {
   collection,
   documentId,
@@ -44,6 +40,8 @@ import {
   where,
 } from 'firebase/firestore'
 import { db } from '../firebase/config'
+import useUserData from '../hooks/useUserData'
+import useTeamArr from '../hooks/useTeamArr'
 
 interface ITaskListProps {
   tasks: TaskWithId[]
@@ -56,52 +54,22 @@ const TaskList = ({ tasks }: ITaskListProps) => {
   // const [modalCreate, setModalCreate] = useState(false)
   const [taskEdit, setTaskEdit] = useState<TaskWithId | null>(null)
   const [optsMenuEl, setOptsMenuEl] = useState<HTMLElement | null>(null)
-  const [userData, setUserData] = useState<Partial<IUser>>({})
-  const [teamsData, setTeamsData] = useState<Partial<ITeamWithId>[]>([])
-  const [membersData, setMembersData] = useState<Partial<IUser>[]>([])
+  const [membersData, setMembersData] = useState<Partial<IUser>[]>([
+    {} as Partial<IUser>,
+  ])
   const theme = useTheme()
   const { alertShow } = useAlertCtx()
   const { user } = useAuthCtx()
 
-  useEffect(() => {
-    if (!user) return
-    const userCollectionRef = collection(db, 'users')
-    const qUser = query(userCollectionRef, where(documentId(), '==', user.uid))
-    const unsubscribe = onSnapshot(qUser, querySnapshot => {
-      querySnapshot.forEach(doc => {
-        setUserData({
-          uid: doc.data().uid,
-          teams: doc.data().teams,
-        })
-      })
-    })
-    return unsubscribe
-  }, [])
+  const loggedUserId = user ? user.uid : ''
+
+  const userData = useUserData(loggedUserId)
+  const grabbedTeamsData = useTeamArr(userData.teams)
 
   useEffect(() => {
-    if (!userData || !userData.teams || userData.teams.length == 0) return
-    const teamsCollectionRef = collection(db, 'teams')
-    const qTeams = query(
-      teamsCollectionRef,
-      where(documentId(), 'in', userData.teams)
-    )
-    const unsubscribe = onSnapshot(qTeams, querySnapshot => {
-      setTeamsData(
-        querySnapshot.docs.map<Partial<ITeamWithId>>(doc => ({
-          ...doc.data(),
-          id: doc.id,
-          name: doc.data().name,
-          members: doc.data().members,
-        }))
-      )
-    })
-    return unsubscribe
-  }, [userData])
-
-  useEffect(() => {
-    if (!teamsData) return
+    if (!grabbedTeamsData) return
     const members: string[] = []
-    teamsData.map(team => {
+    grabbedTeamsData.map(team => {
       if (team.members) members.push(...team.members)
     })
     if (members.length == 0) return
@@ -122,7 +90,7 @@ const TaskList = ({ tasks }: ITaskListProps) => {
       )
     })
     return unsubscribe
-  }, [teamsData])
+  }, [grabbedTeamsData])
 
   useEffect(() => {
     // console.log(membersData)
@@ -312,11 +280,12 @@ const TaskList = ({ tasks }: ITaskListProps) => {
                         </CustomRow>
 
                         <CustomRow>
-                          <GroupsRounded color='info' fontSize='medium'/>
+                          <GroupsRounded color='info' fontSize='medium' />
                           <Typography fontWeight={500}>
                             {
-                              teamsData.find(team => team.id == task.parent)
-                                ?.name
+                              grabbedTeamsData.find(
+                                team => team.id == task.parent
+                              )?.name
                             }
                           </Typography>
                         </CustomRow>
@@ -384,7 +353,6 @@ const TaskList = ({ tasks }: ITaskListProps) => {
           ADD TASK
         </Button>
       </Container>
-
 
       <TaskForm
         taskEdit={taskEdit}
