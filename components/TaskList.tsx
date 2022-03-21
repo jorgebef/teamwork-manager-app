@@ -40,7 +40,7 @@ import {
   where,
 } from 'firebase/firestore'
 import { db } from '../firebase/config'
-import useUserData from '../hooks/useUserData'
+import useUserData from '../hooks/useUser'
 import useTeamArr from '../hooks/useTeamArr'
 
 interface ITaskListProps {
