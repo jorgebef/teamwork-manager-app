@@ -1,13 +1,36 @@
-import { Box, Container } from '@mui/material'
+import { Box, Container, Typography } from '@mui/material'
 import CustomDrawer from './CustomDrawer'
 import NavBar from './NavBar'
 import AlertCustom from './AlertCustom'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
+import { useAuthCtx } from '../context/AuthCtx'
+import { onAuthStateChanged } from 'firebase/auth'
+import { auth } from '../firebase/config'
 
 type LayoutProps = {
   children: React.ReactNode
 }
 
 const Layout = ({ children }: LayoutProps) => {
+  const [loggedIn, setLoggedIn] = useState<boolean>(true)
+  const { user, setUser } = useAuthCtx()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!user && router.asPath !== '/') {
+      router.push('/')
+    } else {
+      setLoggedIn(false)
+    }
+
+    const unsubscribe = onAuthStateChanged(auth, user => {
+      setUser(user)
+      console.log(user?.uid)
+    })
+    return unsubscribe()
+  }, [router, user, setUser])
+
   return (
     <>
       <NavBar />
@@ -19,7 +42,9 @@ const Layout = ({ children }: LayoutProps) => {
         }}
       >
         <CustomDrawer />
-        <Container>{children}</Container>
+        <Container>
+          {loggedIn ? <Typography>REDIRECTING TO HOME</Typography> : children}
+        </Container>
       </Box>
       <AlertCustom />
     </>
