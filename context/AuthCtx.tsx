@@ -10,8 +10,6 @@ import {
 import { auth, googleProvider } from '../firebase/config'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { db } from '../firebase/config'
-import { useRouter } from 'next/router'
-import { Typography } from '@mui/material'
 
 export interface IAuthCtx {
   openDrawer: boolean
@@ -26,31 +24,9 @@ export interface IAuthCtx {
 
 export const AuthCtx = createContext<IAuthCtx>({} as IAuthCtx)
 
-// export const AuthCtx = createContext<IAuthCtx>({
-//   localAuth: true,
-//   setLocalAuth: () => {},
-//   openDrawer: false,
-//   setOpenDrawer: () => {},
-//   user: null,
-//   setUser: () => {},
-// })
-
 export const AuthCtxProvider: React.FC = ({ children }) => {
   const [openDrawer, setOpenDrawer] = useState<boolean>(false)
   const [user, setUser] = useState<User | null>(null)
-  const router = useRouter()
-
-  useEffect(() => {
-    if (!user && router.asPath !== '/') {
-      router.push('/')
-    }
-
-    const unsubscribe = onAuthStateChanged(auth, user => {
-      setUser(user)
-      console.log(user?.uid)
-    })
-    return unsubscribe()
-  }, [router, user])
 
   const login = async () => {
     return await signInAnonymously(auth)
@@ -80,10 +56,6 @@ export const AuthCtxProvider: React.FC = ({ children }) => {
       .catch(err => console.log('error: ' + err))
   }
 
-  // const loginAnon = async () => {
-  //   return await signInAnonymously(auth)
-  // }
-
   const logout = async () => {
     await signOut(auth)
     setUser(null)
@@ -98,7 +70,6 @@ export const AuthCtxProvider: React.FC = ({ children }) => {
         setUser,
         login,
         logout,
-        // loginAnon,
         loginGoogle,
       }}
     >
