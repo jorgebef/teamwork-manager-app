@@ -7,7 +7,11 @@ import {
   ListItemText,
   SwipeableDrawer,
   Drawer,
+  useTheme,
   Toolbar,
+  Typography,
+  Badge,
+  Chip,
 } from '@mui/material'
 import {
   InboxRounded,
@@ -21,6 +25,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React from 'react'
 import { useAuthCtx } from '../context/AuthCtx'
+import useTeamArr from '../hooks/useTeamArr'
+import useUserData from '../hooks/useUser'
 
 type LinkListItemT = {
   title: string
@@ -48,41 +54,96 @@ const linkList: LinkListItemT[] = [
 
 const DrawerList = () => {
   const router = useRouter()
+  const theme = useTheme()
+  const { user } = useAuthCtx()
+
+  const loggedUserId = user ? user.uid : ''
+  const userData = useUserData(loggedUserId)
+  const grabbedTeamsData = useTeamArr(userData.teams)
 
   return (
     <>
       <Toolbar />
       <List>
-        {linkList.map(({ title, path, icon }) => (
-          <Link key={title} href={path} passHref>
-            <ListItem
-              sx={
-                router.asPath === path
-                  ? {
-                      backgroundColor: theme => theme.palette.grey[300],
-                    }
-                  : null
-              }
-              button
-              key={title}
-            >
-              <ListItemIcon>{icon}</ListItemIcon>
-              <ListItemText primary={title} />
-            </ListItem>
-          </Link>
-        ))}
+        <Link href='/tasks' passHref>
+          <ListItem
+            sx={
+              router.asPath === '/tasks'
+                ? {
+                    backgroundColor: theme => theme.palette.grey[300],
+                  }
+                : null
+            }
+            button
+          >
+            <ListItemIcon>{<AssignmentRounded />}</ListItemIcon>
+            <ListItemText primary='Tasks' />
+          </ListItem>
+        </Link>
+        <Divider />
+        <Link href='/teams' passHref>
+          <ListItem
+            sx={
+              router.asPath === '/teams'
+                ? {
+                    backgroundColor: theme => theme.palette.grey[300],
+                  }
+                : null
+            }
+            button
+          >
+            <ListItemIcon>{<GroupsRounded />}</ListItemIcon>
+            <ListItemText primary='Teams' />
+          </ListItem>
+        </Link>
+        {grabbedTeamsData.map(team => {
+          return (
+            <Link key={team.id} href={`/teams/${team.id}`} passHref>
+              <ListItem
+                sx={
+                  router.asPath === `/teams/${team.id}`
+                    ? {
+                        backgroundColor: theme.palette.action.hover,
+                      }
+                    : null
+                }
+                button
+              >
+                <ListItemText>
+                  <Typography variant='body2' noWrap>
+                    {team.name}
+                  </Typography>
+                </ListItemText>
+                <ListItemIcon>
+                  <GroupsRounded sx={{ mr: 1 }} />
+                  {team.members.length}
+                </ListItemIcon>
+              </ListItem>
+            </Link>
+          )
+        })}
       </List>
-      <Divider />
       {/* <List> */}
-      {/*   {['Test 1', 'Test 2', 'Test 3'].map((text, index) => ( */}
-      {/*     <ListItem button key={text}> */}
-      {/*       <ListItemIcon> */}
-      {/*         {index % 2 === 0 ? <InboxRounded /> : <MailRounded />} */}
-      {/*       </ListItemIcon> */}
-      {/*       <ListItemText primary={text} /> */}
-      {/*     </ListItem> */}
+      {/*   {linkList.map(({ title, path, icon }) => ( */}
+      {/*     <Link key={title} href={path} passHref> */}
+      {/*       <ListItem */}
+      {/*         sx={ */}
+      {/*           router.asPath === path */}
+      {/*             ? { */}
+      {/*                 backgroundColor: theme => theme.palette.grey[300], */}
+      {/*               } */}
+      {/*             : null */}
+      {/*         } */}
+      {/*         button */}
+      {/*         key={title} */}
+      {/*       > */}
+      {/*         <ListItemIcon>{icon}</ListItemIcon> */}
+      {/*         <ListItemText primary={title} /> */}
+      {/*       </ListItem> */}
+      {/*     </Link> */}
       {/*   ))} */}
       {/* </List> */}
+      {/* <Divider /> */}
     </>
   )
 }
@@ -113,16 +174,16 @@ const TempDrawer = () => {
 }
 
 const PermanentDrawer = () => {
-  const drawerWidth = 240
+  const theme = useTheme()
 
   return (
     <Drawer
       variant='permanent'
       sx={{
-        width: drawerWidth,
+        width: theme.custom.drawer.width,
         flexShrink: 0,
         [`& .MuiDrawer-paper`]: {
-          width: drawerWidth,
+          width: theme.custom.drawer.width,
           boxSizing: 'border-box',
         },
         display: { xs: 'none', md: 'flex' },
@@ -137,7 +198,7 @@ const PermanentDrawer = () => {
 }
 
 const CustomDrawer: React.FC = () => {
-  const {  user } = useAuthCtx()
+  const { user } = useAuthCtx()
 
   // if (!localAuth) return null
   if (!user) return null

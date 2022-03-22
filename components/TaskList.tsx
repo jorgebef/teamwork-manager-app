@@ -40,7 +40,7 @@ import {
   where,
 } from 'firebase/firestore'
 import { db } from '../firebase/config'
-import useUserData from '../hooks/useUser'
+import useUser from '../hooks/useUser'
 import useTeamArr from '../hooks/useTeamArr'
 
 interface ITaskListProps {
@@ -63,7 +63,7 @@ const TaskList = ({ tasks }: ITaskListProps) => {
 
   const loggedUserId = user ? user.uid : ''
 
-  const userData = useUserData(loggedUserId)
+  const userData = useUser(loggedUserId)
   const grabbedTeamsData = useTeamArr(userData.teams)
 
   useEffect(() => {
@@ -170,7 +170,12 @@ const TaskList = ({ tasks }: ITaskListProps) => {
   return (
     <>
       <Container sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-        <Box>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
           {tasks.length == 0 ? (
             <Typography>NO TASKS</Typography>
           ) : (
@@ -190,6 +195,7 @@ const TaskList = ({ tasks }: ITaskListProps) => {
                       // borderWidth: 1,
                       // borderColor: theme.palette.grey[400],
                       // borderStyle: 'solid',
+                      // maxWidth: '100%',
                     }}
                   >
                     <AccordionSummary
@@ -201,6 +207,10 @@ const TaskList = ({ tasks }: ITaskListProps) => {
                       }
                       aria-controls='panel1bh-content'
                       sx={{
+                        display: 'flex',
+                        width: '100%',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
                         cursor:
                           expanded === task.id ? 'default !important' : 'auto',
                       }}
@@ -209,15 +219,13 @@ const TaskList = ({ tasks }: ITaskListProps) => {
                         sx={{
                           display: 'flex',
                           width: '100%',
-                          // backgroundColor:'red',
                           alignItems: 'center',
                           justifyContent: 'space-between',
                         }}
                       >
                         <Typography
                           noWrap={expanded === task.id ? false : true}
-                          // noWrap={true}
-                          fontSize={19}
+                          fontSize={18}
                           fontWeight={500}
                           sx={{
                             maxWidth: { xs: 200, sm: 370, md: 500, lg: 800 },
@@ -311,35 +319,35 @@ const TaskList = ({ tasks }: ITaskListProps) => {
                     </AccordionDetails>
                   </Accordion>
 
-                  <Menu
-                    id={task.id + '-menu'}
-                    anchorEl={optsMenuEl}
-                    open={Boolean(optsMenuEl)}
-                    onClose={handleCloseOpts}
-                    anchorOrigin={{
-                      vertical: 'bottom',
-                      horizontal: 'right',
-                    }}
-                    transformOrigin={{
-                      vertical: 'top',
-                      horizontal: 'right',
-                    }}
-                    keepMounted
-                  >
-                    <MenuItem onClick={() => handleOpenEditModal(task)}>
-                      <ListItemIcon>
-                        <EditRounded fontSize='small' />
-                      </ListItemIcon>
-                      Edit
-                    </MenuItem>
-                    <Divider />
-                    <MenuItem>
-                      <ListItemIcon>
-                        <DeleteRounded color='error' fontSize='small' />
-                      </ListItemIcon>
-                      Delete
-                    </MenuItem>
-                  </Menu>
+                  {/* <Menu */}
+                  {/*   id={task.id + '-menu'} */}
+                  {/*   anchorEl={optsMenuEl} */}
+                  {/*   open={Boolean(optsMenuEl)} */}
+                  {/*   onClose={handleCloseOpts} */}
+                  {/*   anchorOrigin={{ */}
+                  {/*     vertical: 'bottom', */}
+                  {/*     horizontal: 'right', */}
+                  {/*   }} */}
+                  {/*   transformOrigin={{ */}
+                  {/*     vertical: 'top', */}
+                  {/*     horizontal: 'right', */}
+                  {/*   }} */}
+                  {/*   keepMounted */}
+                  {/* > */}
+                  {/*   <MenuItem onClick={() => handleOpenEditModal(task)}> */}
+                  {/*     <ListItemIcon> */}
+                  {/*       <EditRounded fontSize='small' /> */}
+                  {/*     </ListItemIcon> */}
+                  {/*     Edit */}
+                  {/*   </MenuItem> */}
+                  {/*   <Divider /> */}
+                  {/*   <MenuItem> */}
+                  {/*     <ListItemIcon> */}
+                  {/*       <DeleteRounded color='error' fontSize='small' /> */}
+                  {/*     </ListItemIcon> */}
+                  {/*     Delete */}
+                  {/*   </MenuItem> */}
+                  {/* </Menu> */}
                 </>
               )
             })

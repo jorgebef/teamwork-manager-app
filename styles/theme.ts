@@ -2,6 +2,24 @@ import { createTheme } from '@mui/material'
 import { red } from '@mui/material/colors'
 import { Theme } from '@mui/system'
 
+declare module '@mui/material/styles' {
+  interface Theme {
+    custom: {
+      drawer: {
+        width: string
+      }
+    }
+  }
+  // allow configuration using `createTheme`
+  interface ThemeOptions {
+    custom?: {
+      drawer?: {
+        width?: string
+      }
+    }
+  }
+}
+
 const theme: Theme = createTheme({
   palette: {
     primary: {
@@ -29,6 +47,11 @@ const theme: Theme = createTheme({
   typography: {
     h3: {
       fontWeight: 500,
+    },
+  },
+  custom: {
+    drawer: {
+      width: '15rem',
     },
   },
 })

@@ -107,11 +107,23 @@ const TeamList = ({ teams }: TeamListProps) => {
   }
 
   return (
-    <Container sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+    <Container
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 4,
+      }}
+    >
       {teams.length == 0 ? (
         <Typography>NO TEAMS</Typography>
       ) : (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2,
+          }}
+        >
           {teams.map((team: ITeamWithId) => (
             <Card
               // elevation={0}
@@ -134,10 +146,10 @@ const TeamList = ({ teams }: TeamListProps) => {
                   flexDirection: { xs: 'column', md: 'row' },
                 }}
               >
-                <Typography noWrap maxWidth='100%' variant='h4'>
+                <Typography noWrap maxWidth='100%' variant='h6'>
                   {team.name}
                 </Typography>
-                <AvatarGroup total={team.members.length}>
+                <AvatarGroup sx={{ ml: 2 }} total={team.members.length}>
                   {team.members.slice(0, 2).map((uid: string) => (
                     <Avatar
                       key={uid}

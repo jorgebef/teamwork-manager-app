@@ -24,7 +24,7 @@ const useTeamArr = (teamArr: string[]) => {
           name: doc.data().name,
           description: doc.data().description,
           members: doc.data().members,
-          admins: doc.data().admins,
+          projects: doc.data().projects,
         }))
       )
     })

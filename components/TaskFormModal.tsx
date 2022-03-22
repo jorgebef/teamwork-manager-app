@@ -34,6 +34,8 @@ import {
   where,
 } from 'firebase/firestore'
 import { db } from '../firebase/config'
+import useUser from '../hooks/useUser'
+import useTeamArr from '../hooks/useTeamArr'
 
 interface ITaskFormModalProps {
   taskEdit: TaskWithId | null
@@ -41,41 +43,17 @@ interface ITaskFormModalProps {
   handleClose: (e: React.SyntheticEvent, reason?: string) => void
 }
 
-const TaskForm = ({
-  taskEdit,
-  open,
-  handleClose,
-}: ITaskFormModalProps) => {
+const TaskForm = ({ taskEdit, open, handleClose }: ITaskFormModalProps) => {
   const [taskTemp, setTaskTemp] = useState<TaskWithId | ITask | null>(null)
   const [errors, setErrors] = useState<Record<string, string | null> | null>(
     null
   )
-  const [userData, setUserData] = useState<Partial<IUser>>({})
-  const [teamsData, setTeamsData] = useState<Partial<ITeamWithId>[]>([])
+  // const [teamsData, setTeamsData] = useState<Partial<ITeamWithId>[]>([])
   const [membersData, setMembersData] = useState<Partial<IUser>[]>([])
   const { alertShow } = useAlertCtx()
   const { user } = useAuthCtx()
-
-  useEffect(() => {
-    if (!user) return
-
-    if (!taskEdit) {
-      setTaskTemp({ ...taskDefault, createdBy: user?.uid })
-    } else {
-      setTaskTemp(taskEdit)
-    }
-    const userCollectionRef = collection(db, 'users')
-    const qUser = query(userCollectionRef, where(documentId(), '==', user.uid))
-    const unsubscribe = onSnapshot(qUser, querySnapshot => {
-      querySnapshot.forEach(doc => {
-        setUserData({
-          uid: doc.data().uid,
-          teams: doc.data().teams,
-        })
-      })
-    })
-    return unsubscribe
-  }, [user, taskEdit])
+  const userData = useUser(user?.uid)
+  const teamsData = useTeamArr(userData.teams)
 
   // // Capture taskEdit, which will be different for each task for which
   // // we press the Edit button since the props will be different
@@ -87,36 +65,15 @@ const TaskForm = ({
   // // component and child, we can have the app remember the task we were editing
   // // even if we close the Modal and changes will be there if we reopen the same
   // // task to edit
-  // useEffect(() => {
-  //   if (!taskEdit) {
-  //     setTaskTemp({ ...taskDefault, createdBy: user?.uid })
-  //   } else {
-  //     setTaskTemp(taskEdit)
-  //   }
-  // }, [taskEdit])
+  useEffect(() => {
+    if (!taskEdit) {
+      setTaskTemp({ ...taskDefault, createdBy: user?.uid })
+    } else {
+      setTaskTemp(taskEdit)
+    }
+  }, [user, taskEdit])
 
   useEffect(() => {
-    if (!userData || !userData.teams || userData.teams.length == 0) return
-    const teamsCollectionRef = collection(db, 'teams')
-    const qTeams = query(
-      teamsCollectionRef,
-      where(documentId(), 'in', userData.teams)
-    )
-    const unsubscribe = onSnapshot(qTeams, querySnapshot => {
-      setTeamsData(
-        querySnapshot.docs.map<Partial<ITeamWithId>>(doc => ({
-          ...doc.data(),
-          id: doc.id,
-          name: doc.data().name,
-          members: doc.data().members,
-        }))
-      )
-    })
-    return unsubscribe
-  }, [userData])
-
-  useEffect(() => {
-    if (!teamsData) return
     const members: string[] = []
     teamsData.map(team => {
       if (team.members) members.push(...team.members)
