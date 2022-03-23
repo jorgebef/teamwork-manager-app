@@ -13,7 +13,6 @@ const useUser = (userId: string | undefined) => {
   const [userData, setUserData] = useState<IUser>({} as IUser)
 
   useEffect(() => {
-    console.log(userId)
     if (!userId) return
     const userCollectionRef = collection(db, 'users')
     const qUser = query(userCollectionRef, where(documentId(), '==', userId))

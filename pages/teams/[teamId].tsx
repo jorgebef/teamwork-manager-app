@@ -13,10 +13,14 @@ const TeamId: NextPage = () => {
   const { user } = useAuthCtx()
   const { teamId } = router.query
   const userData = useUser(user?.uid)
+  // _________________________________
+  // INFINITE LOOP
+  // _________________________________
   const taskData = useTaskArr([
     ...(userData.createdTasks ? userData.createdTasks : []),
     ...(userData.assignedTasks ? userData.assignedTasks : []),
   ])
+  // _________________________________
 
   return loading ? (
     <Typography>LOADING ...</Typography>

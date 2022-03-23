@@ -26,7 +26,7 @@ import { useRouter } from 'next/router'
 import React from 'react'
 import { useAuthCtx } from '../context/AuthCtx'
 import useTeamArr from '../hooks/useTeamArr'
-import useUserData from '../hooks/useUser'
+import useUser from '../hooks/useUser'
 
 type LinkListItemT = {
   title: string
@@ -58,7 +58,7 @@ const DrawerList = () => {
   const { user } = useAuthCtx()
 
   const loggedUserId = user ? user.uid : ''
-  const userData = useUserData(loggedUserId)
+  const userData = useUser(loggedUserId)
   const grabbedTeamsData = useTeamArr(userData.teams)
 
   return (
