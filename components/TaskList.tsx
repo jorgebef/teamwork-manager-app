@@ -44,7 +44,7 @@ import useUser from '../hooks/useUser'
 import useTeamArr from '../hooks/useTeamArr'
 
 interface ITaskListProps {
-  tasks: TaskWithId[]
+  tasks: TaskWithId[] | null
 }
 
 const TaskList = ({ tasks }: ITaskListProps) => {
@@ -92,10 +92,6 @@ const TaskList = ({ tasks }: ITaskListProps) => {
     return unsubscribe
   }, [grabbedTeamsData])
 
-  useEffect(() => {
-    // console.log(membersData)
-  }, [membersData])
-
   const handleExpandTask =
     (panel: string) => (e: React.SyntheticEvent, isExpanded: boolean) => {
       // Disable closing the Accordion by clicking the Sumary only when open
@@ -128,14 +124,12 @@ const TaskList = ({ tasks }: ITaskListProps) => {
 
   const handleOpenCreateModal = () => {
     setTaskEdit(null)
-    // console.log(task.modifiedAt)
     setOptsMenuEl(null)
     setTaskFormModal(true)
   }
 
   const handleOpenEditModal = (task: TaskWithId) => {
     setTaskEdit(task)
-    console.log(task.modifiedAt)
     setOptsMenuEl(null)
     setTaskFormModal(true)
   }
@@ -176,7 +170,7 @@ const TaskList = ({ tasks }: ITaskListProps) => {
             flexDirection: 'column',
           }}
         >
-          {tasks.length == 0 ? (
+          {tasks?.length == 0 || !tasks ? (
             <Typography>NO TASKS</Typography>
           ) : (
             tasks.map((task: TaskWithId) => {

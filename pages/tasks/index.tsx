@@ -42,8 +42,6 @@ const Tasks: NextPage = () => {
       setLoading(false)
       return
     }
-    console.log('Tasklist:')
-    console.log(taskList)
 
     const collectionRef = collection(db, 'tasks')
     const q = query(collectionRef, where(documentId(), 'in', taskList))

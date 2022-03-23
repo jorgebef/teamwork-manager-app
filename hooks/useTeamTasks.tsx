@@ -9,18 +9,15 @@ import { useEffect, useState } from 'react'
 import { db } from '../firebase/config'
 import { ITask, IUser, TaskWithId } from '../util/types'
 
-const useTaskArr = (taskArr: string[]) => {
-  const [taskArrData, setTaskArrData] = useState<TaskWithId[]>([])
+const useTeamTasks = (teamId: string | undefined) => {
+  const [tasks, setTasks] = useState<TaskWithId[]>([])
 
   useEffect(() => {
-    if (taskArr.length == 0) {
-      setTaskArrData([])
-      return
-    }
+    if (!teamId) return
     const taskCollectionRef = collection(db, 'tasks')
-    const qTask = query(taskCollectionRef, where(documentId(), 'in', taskArr))
+    const qTask = query(taskCollectionRef, where('parent', '==', teamId))
     const unsubscribe = onSnapshot(qTask, querySnapshot => {
-      setTaskArrData(
+      setTasks(
         querySnapshot.docs.map<TaskWithId>(doc => ({
           id: doc.id,
           title: doc.data().title,
@@ -36,8 +33,10 @@ const useTaskArr = (taskArr: string[]) => {
       )
     })
     return unsubscribe
-  }, [taskArr])
-  return taskArrData
+  }, [teamId])
+  // const taskIds: string[] = tasks.length == 0 ? [] : tasks.map(t => t.id)
+  // return tasks.map(t => t.id)
+  return tasks
 }
 
-export default useTaskArr
+export default useTeamTasks

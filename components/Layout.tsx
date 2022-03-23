@@ -27,7 +27,6 @@ const Layout = ({ children }: LayoutProps) => {
 
     const unsubscribe = onAuthStateChanged(auth, user => {
       setUser(user)
-      console.log(user?.uid)
     })
     return unsubscribe()
   }, [router, user, setUser])

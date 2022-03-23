@@ -49,13 +49,6 @@ const TeamList = ({ teams }: TeamListProps) => {
 
   useEffect(() => {
     if (!memberList || memberList.length == 0) return
-    // console.log(memberList)
-
-    // const prevMembers: Partial<IUser>[] = []
-
-    // members?.map((member:Partial<IUser>)=>{
-    //   console.log(`Member Data: ${member}`)
-    // })
 
     const userCollectionRef = collection(db, 'users')
     // const q = query(userCollectionRef, where(documentId(), 'in', memberList))
@@ -76,11 +69,6 @@ const TeamList = ({ teams }: TeamListProps) => {
 
     // setMembers([...prevMembers, fetchUser(uid)])
   }, [memberList])
-
-  useEffect(() => {
-    console.log('MEMBERS')
-    console.log(members?.map(m => m.userName))
-  }, [members])
 
   const handleOpenEditModal = (team: ITeamWithId) => {
     setTeamEdit(team)

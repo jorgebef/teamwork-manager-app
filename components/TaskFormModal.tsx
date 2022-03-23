@@ -98,12 +98,7 @@ const TaskForm = ({ taskEdit, open, handleClose }: ITaskFormModalProps) => {
     return unsubscribe
   }, [teamsData])
 
-  useEffect(() => {
-    console.log(membersData)
-  }, [membersData])
-
   const handleTextUpdate = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // console.log(taskTemp)
     if (!taskTemp) return
     setTaskTemp({ ...taskTemp, [e.target.id]: e.target.value })
   }

@@ -36,7 +36,6 @@ const Teams: NextPage = () => {
   }, [])
 
   useEffect(() => {
-    // console.log(teamList)
     if (!teamList || !user) return
     if (teamList?.length == 0) {
       setLoading(false)
