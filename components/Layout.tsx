@@ -1,4 +1,4 @@
-import { Box, Container, Typography } from '@mui/material'
+import { Box, Container, Typography, useTheme } from '@mui/material'
 import CustomDrawer from './CustomDrawer'
 import NavBar from './NavBar'
 import AlertCustom from './AlertCustom'
@@ -16,6 +16,7 @@ const Layout = ({ children }: LayoutProps) => {
   const [loggedIn, setLoggedIn] = useState<boolean>(true)
   const { user, setUser } = useAuthCtx()
   const router = useRouter()
+  const theme = useTheme()
 
   useEffect(() => {
     if (!user && router.asPath !== '/') {
@@ -26,7 +27,6 @@ const Layout = ({ children }: LayoutProps) => {
 
     const unsubscribe = onAuthStateChanged(auth, user => {
       setUser(user)
-      console.log(user?.uid)
     })
     return unsubscribe()
   }, [router, user, setUser])
@@ -42,7 +42,15 @@ const Layout = ({ children }: LayoutProps) => {
         }}
       >
         <CustomDrawer />
-        <Container>
+        <Container
+          sx={{
+            maxWidth: {
+              xs: '100%',
+              // md: 'calc(100% - ' + theme.custom.drawer.width + ')',
+              md: `calc(100% - ${theme.custom.drawer.width})`,
+            },
+          }}
+        >
           {loggedIn ? <Typography>REDIRECTING TO HOME</Typography> : children}
         </Container>
       </Box>

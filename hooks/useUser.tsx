@@ -9,10 +9,11 @@ import { useEffect, useState } from 'react'
 import { db } from '../firebase/config'
 import { IUser } from '../util/types'
 
-const useUserData = (userId: string) => {
+const useUser = (userId: string | undefined) => {
   const [userData, setUserData] = useState<IUser>({} as IUser)
 
   useEffect(() => {
+    if (!userId) return
     const userCollectionRef = collection(db, 'users')
     const qUser = query(userCollectionRef, where(documentId(), '==', userId))
     const unsubscribe = onSnapshot(qUser, querySnapshot => {
@@ -34,4 +35,4 @@ const useUserData = (userId: string) => {
   return userData
 }
 
-export default useUserData
+export default useUser

@@ -16,7 +16,6 @@ export const createTeam = async (team: ITeam, uid: string) => {
   const { ...teamData }: ITeam = team
   const teamDocRef = await addDoc(collectionRef, {
     ...teamData,
-    admins: [uid],
   })
 
   const userDocRef = doc(db, 'users', uid)

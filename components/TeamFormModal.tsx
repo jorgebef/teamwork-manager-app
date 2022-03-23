@@ -61,12 +61,7 @@ const TeamFormModal = ({ teamEdit, open, onClose }: ITeamFormModalProps) => {
     return unsubscribe
   }, [user, teamEdit])
 
-  useEffect(() => {
-    console.log(teamTemp)
-  }, [teamTemp])
-
   const handleTextUpdate = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // console.log(taskTemp)
     if (!teamTemp) return
     setTeamTemp({ ...teamTemp, [e.target.id]: e.target.value })
   }
@@ -111,10 +106,7 @@ const TeamFormModal = ({ teamEdit, open, onClose }: ITeamFormModalProps) => {
       const submitRes = await editTeam({ id: teamEdit.id, ...teamTemp }).then(
         r => r
       )
-      alertShow(
-        `Team ${submitRes?.teamData.name} edited successfully`,
-        'info'
-      )
+      alertShow(`Team ${submitRes?.teamData.name} edited successfully`, 'info')
     }
 
     onClose(e)

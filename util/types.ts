@@ -41,7 +41,7 @@ export interface IUser {
 
 export interface ITeam {
   name: string
-  admins: string[]
+  projects: string[]
   members: string[]
   description: string
 }
@@ -53,6 +53,6 @@ export interface ITeamWithId extends ITeam {
 export const teamDefault: ITeam = {
   name: '',
   description: '',
-  admins: [],
+  projects: [],
   members: [],
 }

@@ -36,7 +36,6 @@ const Teams: NextPage = () => {
   }, [])
 
   useEffect(() => {
-    // console.log(teamList)
     if (!teamList || !user) return
     if (teamList?.length == 0) {
       setLoading(false)
@@ -53,8 +52,8 @@ const Teams: NextPage = () => {
           id: doc.id,
           name: doc.data().name,
           description: doc.data().description,
-          members: [...doc.data().members],
-          admins: [...doc.data().admins],
+          members: doc.data().members,
+          projects: doc.data().projects,
         }))
       )
       setLoading(false)
