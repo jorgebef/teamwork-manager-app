@@ -7,7 +7,7 @@ import {
 } from 'firebase/firestore'
 import { useEffect, useState } from 'react'
 import { db } from '../firebase/config'
-import { ITask, IUser, TaskWithId } from '../util/types'
+import { TaskWithId } from '../util/types'
 
 const useTaskArr = (taskArr: string[]) => {
   const [taskArrData, setTaskArrData] = useState<TaskWithId[]>([])

@@ -9,10 +9,11 @@ import { useEffect, useState } from 'react'
 import { db } from '../firebase/config'
 import { ITeam } from '../util/types'
 
-const useTask = (teamId: string) => {
+const useTeam = (teamId: string|null) => {
   const [teamData, setTeamData] = useState<ITeam>({} as ITeam)
 
   useEffect(() => {
+    if (!teamId) return
     const teamCollectionRef = collection(db, 'teams')
     const qTeam = query(teamCollectionRef, where(documentId(), '==', teamId))
     const unsubscribe = onSnapshot(qTeam, querySnapshot => {
@@ -31,4 +32,4 @@ const useTask = (teamId: string) => {
   return teamData
 }
 
-export default useTask
+export default useTeam

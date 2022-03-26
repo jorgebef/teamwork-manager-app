@@ -36,6 +36,7 @@ import {
 import { db } from '../firebase/config'
 import useUser from '../hooks/useUser'
 import useTeamArr from '../hooks/useTeamArr'
+import useTeam from '../hooks/useTeam'
 
 interface ITaskFormModalProps {
   taskEdit: TaskWithId | null
@@ -44,7 +45,7 @@ interface ITaskFormModalProps {
 }
 
 const TaskForm = ({ taskEdit, open, handleClose }: ITaskFormModalProps) => {
-  const [taskTemp, setTaskTemp] = useState<TaskWithId | ITask | null>(null)
+  const [taskTemp, setTaskTemp] = useState<ITask>({} as ITask)
   const [errors, setErrors] = useState<Record<string, string | null> | null>(
     null
   )
@@ -54,6 +55,7 @@ const TaskForm = ({ taskEdit, open, handleClose }: ITaskFormModalProps) => {
   const { user } = useAuthCtx()
   const userData = useUser(user?.uid)
   const teamsData = useTeamArr(userData.teams)
+  const tempTeamData = useTeam(taskTemp?.parent)
 
   // // Capture taskEdit, which will be different for each task for which
   // // we press the Edit button since the props will be different
@@ -74,11 +76,12 @@ const TaskForm = ({ taskEdit, open, handleClose }: ITaskFormModalProps) => {
   }, [user, taskEdit])
 
   useEffect(() => {
-    const members: string[] = []
-    teamsData.map(team => {
-      if (team.members) members.push(...team.members)
-    })
-    if (members.length == 0) return
+    // const members: string[] = []
+    // teamsData.map(team => {
+    //   if (team.members) members.push(...team.members)
+    // })
+    const members: string[] = tempTeamData.members
+    if (!members || members.length == 0) return
     const membersCollectionRef = collection(db, 'users')
     const qMembers = query(
       membersCollectionRef,
@@ -96,7 +99,7 @@ const TaskForm = ({ taskEdit, open, handleClose }: ITaskFormModalProps) => {
       )
     })
     return unsubscribe
-  }, [teamsData])
+  }, [taskTemp, tempTeamData.members])
 
   const handleTextUpdate = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!taskTemp) return
@@ -161,7 +164,7 @@ const TaskForm = ({ taskEdit, open, handleClose }: ITaskFormModalProps) => {
       )
     }
     handleClose(e)
-    setTaskTemp(null)
+    setTaskTemp({} as ITask)
   }
 
   const requiredTextProps: TextFieldProps = {
