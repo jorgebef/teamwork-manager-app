@@ -11,20 +11,18 @@ import React, { useEffect, useState } from 'react'
 import TeamList from '../../components/TeamList'
 import { useAuthCtx } from '../../context/AuthCtx'
 import { db } from '../../firebase/config'
-import { ITeamWithId } from '../../util/types'
+import { ITeam } from '../../util/types'
 
 const Teams: NextPage = () => {
   const [teamList, setTeamList] = useState<string[] | null>(null)
-  const [teams, setTeams] = useState<ITeamWithId[]>([])
+  const [teams, setTeams] = useState<ITeam[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const { user } = useAuthCtx()
 
   useEffect(() => {
-    if (!user) return
-
     const userCollectionRef = collection(db, 'users')
 
-    const q = query(userCollectionRef, where(documentId(), '==', user.uid))
+    const q = query(userCollectionRef, where(documentId(), '==', user!.uid))
     const unsubscribe = onSnapshot(q, querySnapshot => {
       const userTeams: string[] = []
       querySnapshot.forEach(doc => {
@@ -47,7 +45,7 @@ const Teams: NextPage = () => {
 
     const unsubscribe = onSnapshot(q, QuerySnapshot => {
       setTeams(
-        QuerySnapshot.docs.map<ITeamWithId>(doc => ({
+        QuerySnapshot.docs.map<ITeam>(doc => ({
           ...doc.data(),
           id: doc.id,
           name: doc.data().name,

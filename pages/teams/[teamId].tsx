@@ -1,21 +1,23 @@
 import { Container, Typography } from '@mui/material'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import TaskList from '../../components/TaskList'
 import { useAuthCtx } from '../../context/AuthCtx'
-import useTaskArr from '../../hooks/useTaskArr'
-import useTeamTasks from '../../hooks/useTeamTasks'
-import useUser from '../../hooks/useUser'
-import { TaskWithId } from '../../util/types'
+import { useTeamTasks } from '../../hooks/tasks'
+import { useUser } from '../../hooks/users'
 
 const TeamId: NextPage = () => {
-  const [loading, setLoading] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(true)
   const router = useRouter()
   const { user } = useAuthCtx()
   const teamId = router.query.teamId as string | undefined
-  const userData = useUser(user?.uid)
-  const tasksfromTeam: TaskWithId[]   = useTeamTasks(teamId)
+  const userData = useUser(user!.uid)
+  const tasksfromTeam = useTeamTasks(teamId)
+
+  useEffect(() => {
+    tasksfromTeam && setLoading(false)
+  }, [tasksfromTeam])
   // _________________________________
   // INFINITE LOOP
   // _________________________________
@@ -29,7 +31,7 @@ const TeamId: NextPage = () => {
   return loading ? (
     <Typography>LOADING ...</Typography>
   ) : (
-    <TaskList tasks={tasksfromTeam} />
+    <TaskList tasks={tasksfromTeam} teamId={teamId} />
   )
 }
 
