@@ -69,10 +69,10 @@ export const editTeam = async (team: ITeamWithId) => {
   return { teamDocRef, teamData }
 }
 
-export const leaveTeam = async (team: ITeamWithId, uid: string) => {
-  const { ['id']: teamId, ...teamData }: ITeamWithId = team
+export const leaveTeam = async (team: ITeam, uid: string) => {
+  const { ['id']: teamId, ...teamData }: ITeam = team
 
-  const teamDocRef = doc(db, 'teams', teamId)
+  const teamDocRef = doc(db, 'teams', teamId!)
   const teamDocSnap = await getDoc(teamDocRef)
   const membersPrev: string[] = teamDocSnap.data()?.members
   const membersCurr: string[] = membersPrev.filter(m => m !== uid)

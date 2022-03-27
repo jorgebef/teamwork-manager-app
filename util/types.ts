@@ -1,10 +1,10 @@
 import { FieldValue } from 'firebase/firestore'
 
 export interface ITask {
-  // id: string
-  title: string | null
+  id?: string
+  title: string
   createdBy: string | undefined
-  description: string | null
+  description: string
   assignedTo: string | null
   parent: string | null
   createdAt: number | FieldValue
@@ -14,19 +14,15 @@ export interface ITask {
 }
 
 export const taskDefault: ITask = {
-  title: null,
+  title: '',
   createdBy: undefined,
-  description: null,
+  description: '',
   assignedTo: null,
   parent: null,
   createdAt: Date.now(),
   modifiedAt: null,
   dueDate: Date.now(),
   completed: false,
-}
-
-export interface TaskWithId extends ITask {
-  id: string
 }
 
 export interface IUser {
@@ -40,14 +36,11 @@ export interface IUser {
 }
 
 export interface ITeam {
+  id?: string
   name: string
   projects: string[]
   members: string[]
   description: string
-}
-
-export interface ITeamWithId extends ITeam {
-  id: string
 }
 
 export const teamDefault: ITeam = {
@@ -55,4 +48,14 @@ export const teamDefault: ITeam = {
   description: '',
   projects: [],
   members: [],
+}
+
+export interface IProject {
+  id?: string
+  title: string
+  leader: string
+  description: string
+  parent: string
+  members: string[]
+  completed: boolean
 }

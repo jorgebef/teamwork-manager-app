@@ -8,7 +8,7 @@ import {
   serverTimestamp,
   updateDoc,
 } from 'firebase/firestore'
-import { ITask, TaskWithId } from '../util/types'
+import { ITask } from '../util/types'
 import { db } from './config'
 
 export const createTask = async (task: ITask, uid: string) => {
@@ -18,7 +18,7 @@ export const createTask = async (task: ITask, uid: string) => {
   const taskDocRef = await addDoc(collectionRef, {
     ...taskData,
     createdAt: serverTimestamp(),
-    modifiedAt: serverTimestamp(),
+    completed: false,
   })
 
   const userDocRef = doc(db, 'users', uid)
@@ -29,9 +29,9 @@ export const createTask = async (task: ITask, uid: string) => {
   return { taskDocRef, taskData }
 }
 
-export const editTask = async (task: TaskWithId) => {
-  const { ['id']: taskId, ...taskData }: TaskWithId = task
-  const taskDocRef = doc(db, 'tasks', taskId)
+export const editTask = async (task: ITask) => {
+  const { ['id']: taskId, ...taskData }: ITask = task
+  const taskDocRef = doc(db, 'tasks', taskId!)
   await updateDoc(taskDocRef, {
     ...taskData,
     modifiedAt: serverTimestamp(),
