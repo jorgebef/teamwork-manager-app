@@ -10,6 +10,7 @@ import {
 import { auth, googleProvider } from '../firebase/config'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { db } from '../firebase/config'
+import { useRouter } from 'next/router'
 
 export interface IAuthCtx {
   openDrawer: boolean
@@ -27,6 +28,7 @@ export const AuthCtx = createContext<IAuthCtx>({} as IAuthCtx)
 export const AuthCtxProvider: React.FC = ({ children }) => {
   const [openDrawer, setOpenDrawer] = useState<boolean>(false)
   const [user, setUser] = useState<User | null>(null)
+  const router = useRouter()
 
   const login = async () => {
     return await signInAnonymously(auth)
@@ -57,6 +59,7 @@ export const AuthCtxProvider: React.FC = ({ children }) => {
   }
 
   const logout = async () => {
+    router.push('/')
     await signOut(auth)
     setUser(null)
   }
