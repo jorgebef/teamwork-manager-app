@@ -7,16 +7,20 @@ import {
   useTheme,
 } from '@mui/material'
 import React from 'react'
-import { ITeamWithId, TaskWithId } from '../util/types'
+import { ITeam } from '../util/types'
 import { deleteTask } from '../firebase/task'
 import { useAlertCtx } from '../context/AlertCtx'
-import { CancelRounded, DeleteRounded, ExitToAppRounded } from '@mui/icons-material'
+import {
+  CancelRounded,
+  DeleteRounded,
+  ExitToAppRounded,
+} from '@mui/icons-material'
 import { useAuthCtx } from '../context/AuthCtx'
 import { leaveTeam } from '../firebase/teams'
 
 interface TeamLeaveModalProps {
   open: boolean
-  teamEdit: ITeamWithId | null
+  teamEdit: ITeam | null
   handleClose: (e: React.SyntheticEvent, reason?: string) => void
 }
 
@@ -29,7 +33,7 @@ const TeamLeaveModal = ({
   const { user } = useAuthCtx()
 
   const handleLeaveTeam = async (
-    team: ITeamWithId | null,
+    team: ITeam | null,
     e: React.SyntheticEvent
   ) => {
     e.stopPropagation()

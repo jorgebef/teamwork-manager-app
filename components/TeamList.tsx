@@ -15,37 +15,62 @@ import {
   documentId,
   onSnapshot,
   query,
+  QuerySnapshot,
   where,
 } from 'firebase/firestore'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 import { useAuthCtx } from '../context/AuthCtx'
 import { db } from '../firebase/config'
-import { ITeam, ITeamWithId, IUser } from '../util/types'
+import { ITeam, IUser } from '../util/types'
 import TeamFormModal from './TeamFormModal'
 import TeamLeaveModal from './TeamLeaveModal'
 
 type TeamListProps = {
-  teams: ITeamWithId[]
+  teams: ITeam[]
 }
 
 const TeamList = ({ teams }: TeamListProps) => {
   const [memberList, setMemberList] = useState<string[] | null>(null)
-  const [members, setMembers] = useState<Partial<IUser>[] | null>(null)
+  const [members, setMembers] = useState<Partial<IUser>[]>([])
   const [openFormModal, setOpenFormModal] = useState<boolean>(false)
   const [openLeaveModal, setOpenLeaveModal] = useState<boolean>(false)
-  const [teamEdit, setTeamEdit] = useState<ITeamWithId | null>(null)
+  const [teamEdit, setTeamEdit] = useState<ITeam | null>(null)
   const theme = useTheme()
 
   useEffect(() => {
     const totalMembers: string[] = []
     teams.map(team => {
       team.members.map(member => {
-        totalMembers.push(member)
+        !totalMembers.find(m => m === member) && totalMembers.push(member)
       })
     })
+    console.log('TOTAL MEMBERS: ' + totalMembers.length)
     setMemberList(totalMembers)
   }, [teams])
+
+  const fetchBatches = async (memberList: string[] | null) => {
+    if (!memberList || memberList.length == 0) return
+    const userCollectionRef = collection(db, 'users')
+    const batches: Partial<IUser>[] = []
+    while (memberList.length) {
+      const batch = memberList.splice(0, 10)
+      const q = query(userCollectionRef, where(documentId(), 'in', [...batch]))
+      onSnapshot(q, QuerySnapshot => {
+        const res = QuerySnapshot.docs.map<Partial<IUser>>(doc => ({
+          ...doc.data(),
+          uid: doc.data().uid,
+          userName: doc.data().userName,
+          profilePic: doc.data().profilePic,
+        }))
+        batches.push(...res)
+        setMembers([...res, ...members])
+      })
+      console.log('BATCH: --------------------------------------------')
+      console.log(batches)
+    }
+    return Promise.all(batches).then(content => content.flat())
+  }
 
   useEffect(() => {
     if (!memberList || memberList.length == 0) return
@@ -62,15 +87,37 @@ const TeamList = ({ teams }: TeamListProps) => {
           profilePic: doc.data().profilePic,
         }))
       )
-      // setLoading(false)
-      // prevMembers.push()
     })
     return unsubscribe
 
-    // setMembers([...prevMembers, fetchUser(uid)])
+    // if (!memberList || memberList.length == 0) return
+    // const userCollectionRef = collection(db, 'users')
+    // const batches: Partial<IUser>[] = []
+    // while (memberList.length) {
+    //   const batch = memberList.splice(0, 10)
+    //   const q = query(userCollectionRef, where(documentId(), 'in', [...batch]))
+    //   const unsubscribe = onSnapshot(q, QuerySnapshot => {
+    //     const res = QuerySnapshot.docs.map<Partial<IUser>>(doc => ({
+    //       ...doc.data(),
+    //       uid: doc.data().uid,
+    //       userName: doc.data().userName,
+    //       profilePic: doc.data().profilePic,
+    //     }))
+    //     batches.push(...res)
+    //     setMembers(members => [...members, ...res])
+    //   })
+    //   console.log('BATCH: --------------------------------------------')
+    //   console.log(batch)
+    //   return unsubscribe
+    // }
   }, [memberList])
 
-  const handleOpenEditModal = (team: ITeamWithId) => {
+  useEffect(() => {
+    console.log('MEMBERS: ------------------------')
+    console.log(members)
+  }, [members])
+
+  const handleOpenEditModal = (team: ITeam) => {
     setTeamEdit(team)
     setOpenFormModal(true)
   }
@@ -85,7 +132,7 @@ const TeamList = ({ teams }: TeamListProps) => {
     setOpenFormModal(false)
   }
 
-  const handleOpenLeaveModal = (team: ITeamWithId) => {
+  const handleOpenLeaveModal = (team: ITeam) => {
     setTeamEdit(team)
     setOpenLeaveModal(true)
   }
@@ -112,7 +159,7 @@ const TeamList = ({ teams }: TeamListProps) => {
             gap: 2,
           }}
         >
-          {teams.map((team: ITeamWithId) => (
+          {teams.map((team: ITeam) => (
             <Card
               // elevation={0}
               key={team.id}

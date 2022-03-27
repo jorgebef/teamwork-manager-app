@@ -23,13 +23,13 @@ import { useAuthCtx } from '../context/AuthCtx'
 import { useAlertCtx } from '../context/AlertCtx'
 
 interface ITeamFormModalProps {
-  teamEdit: ITeamWithId | null
+  teamEdit: ITeam | null
   open: boolean
   onClose: (e: React.SyntheticEvent, reason?: string) => void
 }
 
 const TeamFormModal = ({ teamEdit, open, onClose }: ITeamFormModalProps) => {
-  const [teamTemp, setTeamTemp] = useState<ITeam | null>(null)
+  const [teamTemp, setTeamTemp] = useState<ITeam>({} as ITeam)
   const [usersData, setUsersData] = useState<Partial<IUser>[]>([])
   const { alertShow } = useAlertCtx()
   const { user } = useAuthCtx()
@@ -92,10 +92,8 @@ const TeamFormModal = ({ teamEdit, open, onClose }: ITeamFormModalProps) => {
 
   const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault()
-    if (!teamTemp || !user) return
-
     if (!teamEdit) {
-      const submitRes = await createTeam(teamTemp, user.uid).then(r => r)
+      const submitRes = await createTeam(teamTemp, user!.uid).then(r => r)
       alertShow(
         `Team ${submitRes?.teamData.name} created successfully with id ${submitRes.teamDocRef.id}`,
         'success'
@@ -103,14 +101,14 @@ const TeamFormModal = ({ teamEdit, open, onClose }: ITeamFormModalProps) => {
     } else if (teamEdit === teamTemp) {
       return
     } else {
-      const submitRes = await editTeam({ id: teamEdit.id, ...teamTemp }).then(
+      const submitRes = await editTeam({ id: teamEdit.id!, ...teamTemp }).then(
         r => r
       )
       alertShow(`Team ${submitRes?.teamData.name} edited successfully`, 'info')
     }
 
     onClose(e)
-    setTeamTemp(null)
+    setTeamTemp({} as ITeam)
   }
 
   return (

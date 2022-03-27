@@ -25,8 +25,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React from 'react'
 import { useAuthCtx } from '../context/AuthCtx'
-import useTeamArr from '../hooks/useTeamArr'
-import useUser from '../hooks/useUser'
+import { useTeamArr, useUserTeams } from '../hooks/teams'
+import { useUser } from '../hooks/users'
 
 type LinkListItemT = {
   title: string
@@ -46,7 +46,7 @@ const linkList: LinkListItemT[] = [
   //   icon: <FolderRounded />,
   // },
   {
-    title: 'Tasks',
+    title: 'Assigned tasks',
     path: '/tasks',
     icon: <AssignmentRounded />,
   },
@@ -57,9 +57,8 @@ const DrawerList = () => {
   const theme = useTheme()
   const { user } = useAuthCtx()
 
-  const loggedUserId = user ? user.uid : ''
-  const userData = useUser(loggedUserId)
-  const grabbedTeamsData = useTeamArr(userData.teams)
+  const userData = useUser(user!.uid)
+  const userTeams = useUserTeams(user!.uid)
 
   return (
     <>
@@ -77,7 +76,7 @@ const DrawerList = () => {
             button
           >
             <ListItemIcon>{<AssignmentRounded />}</ListItemIcon>
-            <ListItemText primary='Tasks' />
+            <ListItemText primary='My tasks' />
           </ListItem>
         </Link>
         <Divider />
@@ -96,7 +95,7 @@ const DrawerList = () => {
             <ListItemText primary='Teams' />
           </ListItem>
         </Link>
-        {grabbedTeamsData.map(team => {
+        {userTeams?.map(team => {
           return (
             <Link key={team.id} href={`/teams/${team.id}`} passHref>
               <ListItem

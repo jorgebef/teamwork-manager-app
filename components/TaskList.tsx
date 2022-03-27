@@ -1,7 +1,4 @@
 import { useEffect, useState } from 'react'
-import Accordion from '@mui/material/Accordion'
-import AccordionDetails from '@mui/material/AccordionDetails'
-import AccordionSummary from '@mui/material/AccordionSummary'
 import Typography from '@mui/material/Typography'
 import {
   Avatar,
@@ -16,94 +13,33 @@ import {
   // Snackbar,
   useTheme,
 } from '@mui/material'
-import {
-  ExpandMoreRounded,
-  DeleteRounded,
-  EditRounded,
-  FlagRounded,
-  GroupsRounded,
-  // MoreHorizRounded,
-} from '@mui/icons-material'
-import moment from 'moment'
-import { styled } from '@mui/system'
 import TaskForm from './TaskFormModal'
-import { useAlertCtx } from '../context/AlertCtx'
 import { deleteTask } from '../firebase/task'
 import TaskDelModal from './TaskDelModal'
 import { useAuthCtx } from '../context/AuthCtx'
-import { ITeamWithId, IUser, TaskWithId } from '../util/types'
-import {
-  collection,
-  documentId,
-  onSnapshot,
-  query,
-  where,
-} from 'firebase/firestore'
-import { db } from '../firebase/config'
-import useUser from '../hooks/useUser'
-import useTeamArr from '../hooks/useTeamArr'
+import { IUser, ITask, ITeam } from '../util/types'
+import { useUser } from '../hooks/users'
+import { useUserTeams } from '../hooks/teams'
+import TaskAccordion from './TaskAccordion'
+import { useTaskListCtx } from '../context/TaskListCtx'
 
 interface ITaskListProps {
-  tasks: TaskWithId[] | null
+  tasks: ITask[] | null
 }
 
 const TaskList = ({ tasks }: ITaskListProps) => {
-  const [expanded, setExpanded] = useState<string | false>(false)
-  const [taskFormModal, setTaskFormModal] = useState<boolean>(false)
-  const [taskDelModal, setTaskDelModal] = useState<boolean>(false)
-  // const [modalCreate, setModalCreate] = useState(false)
-  const [taskEdit, setTaskEdit] = useState<TaskWithId | null>(null)
-  const [optsMenuEl, setOptsMenuEl] = useState<HTMLElement | null>(null)
-  const [membersData, setMembersData] = useState<Partial<IUser>[]>([
-    {} as Partial<IUser>,
-  ])
-  const theme = useTheme()
-  const { alertShow } = useAlertCtx()
+  const {
+    taskFormModal,
+    setTaskFormModal,
+    taskDelModal,
+    setTaskDelModal,
+    taskEdit,
+    setTaskEdit,
+  } = useTaskListCtx()
+
   const { user } = useAuthCtx()
 
-  const loggedUserId = user ? user.uid : ''
-
-  const userData = useUser(loggedUserId)
-  const grabbedTeamsData = useTeamArr(userData.teams)
-
-  useEffect(() => {
-    if (!grabbedTeamsData) return
-    const members: string[] = []
-    grabbedTeamsData.map(team => {
-      if (team.members) members.push(...team.members)
-    })
-    if (members.length == 0) return
-    const membersCollectionRef = collection(db, 'users')
-    const qMembers = query(
-      membersCollectionRef,
-      where(documentId(), 'in', members)
-    )
-    const unsubscribe = onSnapshot(qMembers, querySnapshot => {
-      setMembersData(
-        querySnapshot.docs.map<Partial<IUser>>(doc => ({
-          ...doc.data(),
-          uid: doc.id,
-          userName: doc.data().userName,
-          email: doc.data().email,
-          profilePic: doc.data().profilePic,
-        }))
-      )
-    })
-    return unsubscribe
-  }, [grabbedTeamsData])
-
-  const handleExpandTask =
-    (panel: string) => (e: React.SyntheticEvent, isExpanded: boolean) => {
-      // Disable closing the Accordion by clicking the Sumary only when open
-      // force the user to use the closing arrow
-      // This way we can implement the MoreHorizRounded icon for editing and deleting
-      if (expanded === e.currentTarget.id) return
-      setExpanded(isExpanded ? panel : false)
-    }
-
-  const handleUnexpandTask = () => {
-    setExpanded(false)
-  }
+  const userData: IUser = useUser(user!.uid)
 
   const handleCloseFormModal = (e: React.SyntheticEvent, reason?: string) => {
     // Here we handle the case were we click on the backdrop
@@ -113,53 +49,14 @@ const TaskList = ({ tasks }: ITaskListProps) => {
     setTaskFormModal(false)
   }
 
-  const handleOpenDelModal = (task: TaskWithId) => {
-    setTaskEdit(task)
-    setTaskDelModal(true)
-  }
-
   const handleCloseDelModal = (e: React.SyntheticEvent, reason?: string) => {
     setTaskDelModal(false)
   }
 
   const handleOpenCreateModal = () => {
     setTaskEdit(null)
-    setOptsMenuEl(null)
     setTaskFormModal(true)
   }
-
-  const handleOpenEditModal = (task: TaskWithId) => {
-    setTaskEdit(task)
-    setOptsMenuEl(null)
-    setTaskFormModal(true)
-  }
-
-  const handleCloseOpts = () => {
-    setOptsMenuEl(null)
-  }
-
-  const handleOpenOpts = (e: React.MouseEvent<HTMLElement>) => {
-    setOptsMenuEl(e.currentTarget)
-  }
-
-  const handleDelete = async (
-    task: TaskWithId | null,
-    e: React.SyntheticEvent
-  ) => {
-    e.stopPropagation()
-    if (!task || !user) return
-    setTaskDelModal(false)
-    const deleteRes = await deleteTask(task.id, user.uid).then(r => r)
-    // alert(`Delete ${docRef.id} successfully`)
-    alertShow(`Successfully deleted task id ${deleteRes?.taskId} !!`, 'error')
-  }
-
-  const CustomRow = styled(Box)({
-    display: 'flex',
-    alignItems: 'center',
-    gap: theme.spacing(1),
-    marginTop: theme.spacing(2),
-  })
 
   return (
     <>
@@ -173,177 +70,8 @@ const TaskList = ({ tasks }: ITaskListProps) => {
           {tasks?.length == 0 || !tasks ? (
             <Typography>NO TASKS</Typography>
           ) : (
-            tasks.map((task: TaskWithId) => {
-              return (
-                <>
-                  <Accordion
-                    key={task.id}
-                    expanded={expanded === task.id}
-                    onChange={handleExpandTask(task.id)}
-                    elevation={0}
-                    sx={{
-                      backgroundColor:
-                        expanded === task.id
-                          ? theme.palette.grey[200]
-                          : theme.palette.grey[50],
-                      // borderWidth: 1,
-                      // borderColor: theme.palette.grey[400],
-                      // borderStyle: 'solid',
-                      // maxWidth: '100%',
-                    }}
-                  >
-                    <AccordionSummary
-                      id={task.id}
-                      expandIcon={
-                        <IconButton onClick={handleUnexpandTask}>
-                          <ExpandMoreRounded />
-                        </IconButton>
-                      }
-                      aria-controls='panel1bh-content'
-                      sx={{
-                        display: 'flex',
-                        width: '100%',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        cursor:
-                          expanded === task.id ? 'default !important' : 'auto',
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          width: '100%',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                        }}
-                      >
-                        <Typography
-                          noWrap={expanded === task.id ? false : true}
-                          fontSize={18}
-                          fontWeight={500}
-                          sx={{
-                            maxWidth: { xs: 200, sm: 370, md: 500, lg: 800 },
-                            width: '100%',
-                          }}
-                        >
-                          {task.title}
-                        </Typography>
-
-                        {/* <IconButton */}
-                        {/*   onClick={handleOpenOpts} */}
-                        {/*   sx={{ */}
-                        {/*     display: expanded === task.id ? 'flex' : 'none', */}
-                        {/*     mr: 1, */}
-                        {/*   }} */}
-                        {/* > */}
-                        {/*   <MoreHorizRounded /> */}
-                        {/* </IconButton> */}
-
-                        <Box
-                          sx={{
-                            display: expanded === task.id ? 'flex' : 'none',
-                            gap: 1,
-                            mr: 1,
-                          }}
-                        >
-                          <IconButton
-                            aria-label='Edit'
-                            onClick={() => handleOpenEditModal(task)}
-                          >
-                            <EditRounded />
-                          </IconButton>
-                          <IconButton
-                            aria-label='Delete'
-                            // onClick={e => handleDelete(task.id, e)}
-                            onClick={() => handleOpenDelModal(task)}
-                          >
-                            <DeleteRounded color='error' />
-                          </IconButton>
-                        </Box>
-                      </Box>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'flex-start',
-                        }}
-                      >
-                        <Typography fontWeight={400}>
-                          {task.description}
-                        </Typography>
-
-                        <CustomRow>
-                          <FlagRounded color='success' fontSize='medium' />
-                          <Typography fontWeight={500}>
-                            {moment(task.dueDate).format('MMM Do, YYYY')}
-                          </Typography>
-                        </CustomRow>
-
-                        <CustomRow>
-                          <GroupsRounded color='info' fontSize='medium' />
-                          <Typography fontWeight={500}>
-                            {
-                              grabbedTeamsData.find(
-                                team => team.id == task.parent
-                              )?.name
-                            }
-                          </Typography>
-                        </CustomRow>
-
-                        <CustomRow>
-                          <Avatar
-                            src={
-                              membersData.find(
-                                member => member.uid == task.assignedTo
-                              )?.profilePic
-                            }
-                            sx={{ width: 24, height: 24 }}
-                          />
-                          <Typography fontWeight={500}>
-                            {
-                              membersData.find(
-                                member => member.uid == task.assignedTo
-                              )?.userName
-                            }
-                          </Typography>
-                        </CustomRow>
-                      </Box>
-                    </AccordionDetails>
-                  </Accordion>
-
-                  {/* <Menu */}
-                  {/*   id={task.id + '-menu'} */}
-                  {/*   anchorEl={optsMenuEl} */}
-                  {/*   open={Boolean(optsMenuEl)} */}
-                  {/*   onClose={handleCloseOpts} */}
-                  {/*   anchorOrigin={{ */}
-                  {/*     vertical: 'bottom', */}
-                  {/*     horizontal: 'right', */}
-                  {/*   }} */}
-                  {/*   transformOrigin={{ */}
-                  {/*     vertical: 'top', */}
-                  {/*     horizontal: 'right', */}
-                  {/*   }} */}
-                  {/*   keepMounted */}
-                  {/* > */}
-                  {/*   <MenuItem onClick={() => handleOpenEditModal(task)}> */}
-                  {/*     <ListItemIcon> */}
-                  {/*       <EditRounded fontSize='small' /> */}
-                  {/*     </ListItemIcon> */}
-                  {/*     Edit */}
-                  {/*   </MenuItem> */}
-                  {/*   <Divider /> */}
-                  {/*   <MenuItem> */}
-                  {/*     <ListItemIcon> */}
-                  {/*       <DeleteRounded color='error' fontSize='small' /> */}
-                  {/*     </ListItemIcon> */}
-                  {/*     Delete */}
-                  {/*   </MenuItem> */}
-                  {/* </Menu> */}
-                </>
-              )
+            tasks.map((task: ITask) => {
+              return <TaskAccordion key={task.id} task={task} />
             })
           )}
         </Box>

@@ -7,7 +7,7 @@ import {
   useTheme,
 } from '@mui/material'
 import React from 'react'
-import { TaskWithId } from '../util/types'
+import { ITask } from '../util/types'
 import { deleteTask } from '../firebase/task'
 import { useAlertCtx } from '../context/AlertCtx'
 import { CancelRounded, DeleteRounded } from '@mui/icons-material'
@@ -15,26 +15,19 @@ import { useAuthCtx } from '../context/AuthCtx'
 
 interface ITaskDelModalProps {
   open: boolean
-  taskEdit: TaskWithId | null
+  taskEdit: ITask | null
   handleClose: (e: React.SyntheticEvent, reason?: string) => void
 }
 
- const TaskDelModal = ({
-  open,
-  taskEdit,
-  handleClose,
-}: ITaskDelModalProps) => {
+const TaskDelModal = ({ open, taskEdit, handleClose }: ITaskDelModalProps) => {
   const { alertShow } = useAlertCtx()
   const { user } = useAuthCtx()
 
-  const handleDelete = async (
-    task: TaskWithId | null,
-    e: React.SyntheticEvent
-  ) => {
+  const handleDelete = async (task: ITask | null, e: React.SyntheticEvent) => {
     e.stopPropagation()
     if (!task || !user) return
     handleClose(e)
-    const deleteRes = await deleteTask(task.id, user.uid).then(r => r)
+    const deleteRes = await deleteTask(task.id!, user.uid).then(r => r)
     // alert(`Delete ${docRef.id} successfully`)
     alertShow(`Successfully deleted task id ${deleteRes?.taskId} !!`, 'error')
   }

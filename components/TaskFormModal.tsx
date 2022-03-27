@@ -8,15 +8,9 @@ import {
   // FormControl,
   Autocomplete,
   TextFieldProps,
-  AlertColor,
 } from '@mui/material'
-import {
-  ITask,
-  ITeamWithId,
-  IUser,
-  taskDefault,
-  TaskWithId,
-} from '../util/types'
+import { ITask, taskDefault } from '../util/types'
+// import { ITask, IUser } from '../util/types'
 import { CancelRounded, CheckCircleRounded } from '@mui/icons-material'
 
 import DateAdapter from '@mui/lab/AdapterMoment'
@@ -26,20 +20,12 @@ import moment from 'moment'
 import { useAlertCtx } from '../context/AlertCtx'
 import { createTask, editTask } from '../firebase/task'
 import { useAuthCtx } from '../context/AuthCtx'
-import {
-  collection,
-  documentId,
-  onSnapshot,
-  query,
-  where,
-} from 'firebase/firestore'
-import { db } from '../firebase/config'
-import useUser from '../hooks/useUser'
-import useTeamArr from '../hooks/useTeamArr'
-import useTeam from '../hooks/useTeam'
+import { useUser } from '../hooks/users'
+import { useTeam, useTeamArr } from '../hooks/teams'
+import useUserArr from '../hooks/useUserArr'
 
 interface ITaskFormModalProps {
-  taskEdit: TaskWithId | null
+  taskEdit: ITask | null
   open: boolean
   handleClose: (e: React.SyntheticEvent, reason?: string) => void
 }
@@ -49,13 +35,12 @@ const TaskForm = ({ taskEdit, open, handleClose }: ITaskFormModalProps) => {
   const [errors, setErrors] = useState<Record<string, string | null> | null>(
     null
   )
-  // const [teamsData, setTeamsData] = useState<Partial<ITeamWithId>[]>([])
-  const [membersData, setMembersData] = useState<Partial<IUser>[]>([])
   const { alertShow } = useAlertCtx()
   const { user } = useAuthCtx()
-  const userData = useUser(user?.uid)
-  const teamsData = useTeamArr(userData.teams)
-  const tempTeamData = useTeam(taskTemp?.parent)
+  const userData = useUser(user!.uid)
+  const userTeams = useTeamArr(userData.teams)
+  const tempTeam = useTeam(taskTemp?.parent)
+  const tempMembers = useUserArr(tempTeam.members)
 
   // // Capture taskEdit, which will be different for each task for which
   // // we press the Edit button since the props will be different
@@ -70,36 +55,11 @@ const TaskForm = ({ taskEdit, open, handleClose }: ITaskFormModalProps) => {
   useEffect(() => {
     if (!taskEdit) {
       setTaskTemp({ ...taskDefault, createdBy: user?.uid })
+      // setTaskTemp({} as ITask)
     } else {
       setTaskTemp(taskEdit)
     }
   }, [user, taskEdit])
-
-  useEffect(() => {
-    // const members: string[] = []
-    // teamsData.map(team => {
-    //   if (team.members) members.push(...team.members)
-    // })
-    const members: string[] = tempTeamData.members
-    if (!members || members.length == 0) return
-    const membersCollectionRef = collection(db, 'users')
-    const qMembers = query(
-      membersCollectionRef,
-      where(documentId(), 'in', members)
-    )
-    const unsubscribe = onSnapshot(qMembers, querySnapshot => {
-      setMembersData(
-        querySnapshot.docs.map<Partial<IUser>>(doc => ({
-          ...doc.data(),
-          uid: doc.id,
-          userName: doc.data().userName,
-          email: doc.data().email,
-          profilePic: doc.data().profilePic,
-        }))
-      )
-    })
-    return unsubscribe
-  }, [taskTemp, tempTeamData.members])
 
   const handleTextUpdate = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!taskTemp) return
@@ -133,7 +93,7 @@ const TaskForm = ({ taskEdit, open, handleClose }: ITaskFormModalProps) => {
       description: taskTemp?.description ? null : 'Must have description',
       // asignee: taskTemp?.assignedTo ? null : 'Must be assigned',
       dueDate: taskTemp?.dueDate ? null : 'Must assign due date',
-      // parent: taskTemp?.parent ? null : 'Must form part of a project',
+      parent: taskTemp?.parent ? null : 'Must form part of a project',
     }
     setErrors({ ...temp })
     return Object.values(temp).every(v => v === null)
@@ -141,9 +101,9 @@ const TaskForm = ({ taskEdit, open, handleClose }: ITaskFormModalProps) => {
 
   const handleSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault()
-    if (!errorCheck() || !taskTemp || !user) return
+    if (!errorCheck()) return
     if (!taskEdit) {
-      const submitRes = await createTask(taskTemp, user.uid).then(r => r)
+      const submitRes = await createTask(taskTemp, user!.uid).then(r => r)
       alertShow(
         `Todo id:${submitRes?.taskDocRef.id}, named: ${
           submitRes?.taskData.title
@@ -153,7 +113,7 @@ const TaskForm = ({ taskEdit, open, handleClose }: ITaskFormModalProps) => {
     } else if (taskEdit === taskTemp) {
       return
     } else {
-      const submitRes = await editTask({ id: taskEdit.id, ...taskTemp }).then(
+      const submitRes = await editTask({ id: taskEdit.id!, ...taskTemp }).then(
         r => r
       )
       alertShow(
@@ -241,9 +201,9 @@ const TaskForm = ({ taskEdit, open, handleClose }: ITaskFormModalProps) => {
             id='parent'
             fullWidth
             size='small'
-            options={teamsData.map(t => t.id)}
+            options={userTeams.map(t => t.id)}
             getOptionLabel={option => {
-              const team = teamsData.find(t => t.id === option)
+              const team = userTeams.find(t => t.id === option)
               return team?.name ? team.name : ''
             }}
             value={taskTemp?.parent}
@@ -268,9 +228,9 @@ const TaskForm = ({ taskEdit, open, handleClose }: ITaskFormModalProps) => {
             // freeSolo
             disabled={taskTemp?.parent ? false : true}
             value={taskTemp?.assignedTo}
-            options={membersData.map(m => m.uid)}
+            options={tempMembers.map(m => m.uid)}
             getOptionLabel={option => {
-              const member = membersData.find(m => m.uid === option)
+              const member = tempMembers.find(m => m.uid === option)
               return member?.userName ? member.userName : ''
             }}
             onChange={(e, newValue) =>
