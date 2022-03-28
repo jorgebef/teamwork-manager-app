@@ -1,9 +1,7 @@
 import {
   collection,
-  doc,
   DocumentData,
   documentId,
-  getDocs,
   onSnapshot,
   query,
   QueryDocumentSnapshot,
@@ -14,7 +12,6 @@ import { db } from '../firebase/config'
 import { ITask } from '../util/types'
 
 const taskCollectionRef = collection(db, 'tasks')
-const batches: ITask[] = []
 
 const docData = (doc: QueryDocumentSnapshot<DocumentData>) => {
   return {
@@ -49,24 +46,6 @@ export const useTask = (taskId: string | undefined) => {
   return taskData
 }
 
-export const useTaskArr = (taskArr: string[] | null) => {
-  const [taskArrData, setTaskArrData] = useState<ITask[] | null>(null)
-
-  useEffect(() => {
-    if (!taskArr || taskArr.length == 0) return
-
-    // TESTING WITH MORE THAN 10
-    const taskList = [...taskArr, ...taskArr, ...taskArr]
-
-    const qTask = query(taskCollectionRef, where(documentId(), 'in', taskList))
-    const unsubscribe = onSnapshot(qTask, querySnapshot => {
-      setTaskArrData(querySnapshot.docs.map<ITask>(doc => docData(doc)))
-    })
-    return unsubscribe
-  }, [taskArr])
-
-  return taskArrData
-}
 
 export const useTeamTasks = (teamId: string | undefined) => {
   const [tasks, setTasks] = useState<ITask[] | null>(null)
@@ -89,7 +68,6 @@ export const useUserTasks = (uid: string) => {
   const [tasks, setTasks] = useState<ITask[] | null>(null)
 
   useEffect(() => {
-    // const tasks: ITask[] = []
     const qCreated = query(taskCollectionRef, where('createdBy', '==', uid))
     const qAssigned = query(taskCollectionRef, where('assignedTo', '==', uid))
     onSnapshot(qCreated, querySnapshot => {

@@ -39,6 +39,7 @@ export interface ITeam {
   id?: string
   name: string
   projects: string[]
+  admins: string[]
   members: string[]
   description: string
 }
@@ -48,6 +49,7 @@ export const teamDefault: ITeam = {
   description: '',
   projects: [],
   members: [],
+  admins: [],
 }
 
 export interface IProject {

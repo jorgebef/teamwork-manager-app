@@ -8,7 +8,7 @@ import {
   serverTimestamp,
   updateDoc,
 } from 'firebase/firestore'
-import { ITask, ITeam, ITeamWithId } from '../util/types'
+import { ITask, ITeam } from '../util/types'
 import { db } from './config'
 
 export const createTeam = async (team: ITeam, uid: string) => {
@@ -16,19 +16,22 @@ export const createTeam = async (team: ITeam, uid: string) => {
   const { ...teamData }: ITeam = team
   const teamDocRef = await addDoc(collectionRef, {
     ...teamData,
+    admins: [uid],
   })
 
-  const userDocRef = doc(db, 'users', uid)
-  const userDocSnap: DocumentData = await getDoc(userDocRef)
-  const teamsPrev: string[] = userDocSnap.data()?.teams
-  await updateDoc(userDocRef, 'teams', [...teamsPrev, teamDocRef.id])
+  teamData.members.map(async memberUid => {
+    const userDocRef = doc(db, 'users', memberUid)
+    const userDocSnap: DocumentData = await getDoc(userDocRef)
+    const teamsPrev: string[] = userDocSnap.data()?.teams
+    await updateDoc(userDocRef, 'teams', [...teamsPrev, teamDocRef.id])
+  })
 
   return { teamDocRef, teamData }
 }
 
-export const editTeam = async (team: ITeamWithId) => {
-  const { ['id']: teamId, ...teamData }: ITeamWithId = team
-  const teamDocRef = doc(db, 'teams', teamId)
+export const editTeam = async (team: ITeam) => {
+  const { ['id']: teamId, ...teamData }: ITeam = team
+  const teamDocRef = doc(db, 'teams', teamId!)
 
   const teamDocSnap = await getDoc(teamDocRef)
   const membersPrev: string[] | null = teamDocSnap.data()?.members
@@ -58,7 +61,7 @@ export const editTeam = async (team: ITeamWithId) => {
       const userDocRef = doc(db, 'users', member)
       const userDocSnap = await getDoc(userDocRef)
       const teamsPrev: string[] = userDocSnap.data()?.teams
-      const updatedTeams: string[] = [...teamsPrev, teamId]
+      const updatedTeams: string[] = [...teamsPrev, teamId!]
       await updateDoc(userDocRef, 'teams', [...updatedTeams])
     })
   }
@@ -77,6 +80,7 @@ export const leaveTeam = async (team: ITeam, uid: string) => {
   const membersPrev: string[] = teamDocSnap.data()?.members
   const membersCurr: string[] = membersPrev.filter(m => m !== uid)
   await updateDoc(teamDocRef, 'members', [...membersCurr])
+  if (membersCurr.length == 0) await deleteDoc(teamDocRef)
 
   const userDocRef = doc(db, 'users', uid)
   const userDocSnap: DocumentData = await getDoc(userDocRef)
