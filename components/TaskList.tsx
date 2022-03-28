@@ -1,41 +1,27 @@
-import { useEffect, useState } from 'react'
 import Typography from '@mui/material/Typography'
-import {
-  Avatar,
-  Box,
-  Button,
-  Container,
-  Divider,
-  IconButton,
-  ListItemIcon,
-  Menu,
-  MenuItem,
-  // Snackbar,
-  useTheme,
-} from '@mui/material'
+import { Box, Button, Container } from '@mui/material'
 import TaskForm from './TaskFormModal'
-import { deleteTask } from '../firebase/task'
 import TaskDelModal from './TaskDelModal'
 import { useAuthCtx } from '../context/AuthCtx'
-import { IUser, ITask, ITeam } from '../util/types'
+import { IUser, ITask } from '../util/types'
 import { useUser } from '../hooks/users'
-import { useUserTeams } from '../hooks/teams'
 import TaskAccordion from './TaskAccordion'
-import { useTaskListCtx } from '../context/TaskListCtx'
+import { useActionsCtx } from '../context/ActionsCtx'
 
 interface ITaskListProps {
-  tasks: ITask[] | null
+  tasks: ITask[]
 }
 
 const TaskList = ({ tasks }: ITaskListProps) => {
   const {
+    setExpanded,
     taskFormModal,
     setTaskFormModal,
     taskDelModal,
     setTaskDelModal,
     taskEdit,
     setTaskEdit,
-  } = useTaskListCtx()
+  } = useActionsCtx()
 
   const { user } = useAuthCtx()
 
@@ -49,11 +35,12 @@ const TaskList = ({ tasks }: ITaskListProps) => {
     setTaskFormModal(false)
   }
 
-  const handleCloseDelModal = (e: React.SyntheticEvent, reason?: string) => {
+  const handleCloseDelModal = (e: React.SyntheticEvent) => {
     setTaskDelModal(false)
   }
 
   const handleOpenCreateModal = () => {
+    setExpanded(false)
     setTaskEdit(null)
     setTaskFormModal(true)
   }
@@ -67,7 +54,7 @@ const TaskList = ({ tasks }: ITaskListProps) => {
             flexDirection: 'column',
           }}
         >
-          {tasks?.length == 0 || !tasks ? (
+          {tasks?.length == 0 ? (
             <Typography>NO TASKS</Typography>
           ) : (
             tasks.map((task: ITask) => {

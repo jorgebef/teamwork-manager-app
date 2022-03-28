@@ -20,9 +20,9 @@ import moment from 'moment'
 import { useAlertCtx } from '../context/AlertCtx'
 import { createTask, editTask } from '../firebase/task'
 import { useAuthCtx } from '../context/AuthCtx'
-import { useUser } from '../hooks/users'
-import { useTeam, useTeamArr } from '../hooks/teams'
+import { useTeam, useUserTeams } from '../hooks/teams'
 import useUserArr from '../hooks/useUserArr'
+import { useTeamUsers } from '../hooks/users'
 
 interface ITaskFormModalProps {
   taskEdit: ITask | null
@@ -30,17 +30,21 @@ interface ITaskFormModalProps {
   handleClose: (e: React.SyntheticEvent, reason?: string) => void
 }
 
+interface IFormErrors {
+  title: string | null
+  description: string | null
+  dueDate: string | null
+  parent: string | null
+  assignedTo: string | null
+}
+
 const TaskForm = ({ taskEdit, open, handleClose }: ITaskFormModalProps) => {
   const [taskTemp, setTaskTemp] = useState<ITask>({} as ITask)
-  const [errors, setErrors] = useState<Record<string, string | null> | null>(
-    null
-  )
+  const [errors, setErrors] = useState<IFormErrors | null>(null)
   const { alertShow } = useAlertCtx()
   const { user } = useAuthCtx()
-  const userData = useUser(user!.uid)
-  const userTeams = useTeamArr(userData.teams)
-  const tempTeam = useTeam(taskTemp?.parent)
-  const tempMembers = useUserArr(tempTeam.members)
+  const userTeams = useUserTeams(user!.uid)
+  const tempMembers = useTeamUsers(taskTemp.parent)
 
   // // Capture taskEdit, which will be different for each task for which
   // // we press the Edit button since the props will be different
@@ -86,14 +90,13 @@ const TaskForm = ({ taskEdit, open, handleClose }: ITaskFormModalProps) => {
   }
 
   const errorCheck = () => {
-    // if (!taskTemp?.assignedTo)
-    // setTaskTemp({ ...taskTemp, assignedTo: user?.uid })
-    const temp: Record<string, string | null> = {
+    const temp: IFormErrors = {
       title: taskTemp?.title ? null : 'Must have Title',
       description: taskTemp?.description ? null : 'Must have description',
-      // asignee: taskTemp?.assignedTo ? null : 'Must be assigned',
       dueDate: taskTemp?.dueDate ? null : 'Must assign due date',
       parent: taskTemp?.parent ? null : 'Must form part of a project',
+      // assignedTo: taskTemp?.assignedTo ? null : 'Must be assigned',
+      assignedTo: null,
     }
     setErrors({ ...temp })
     return Object.values(temp).every(v => v === null)
@@ -201,9 +204,9 @@ const TaskForm = ({ taskEdit, open, handleClose }: ITaskFormModalProps) => {
             id='parent'
             fullWidth
             size='small'
-            options={userTeams.map(t => t.id)}
+            options={userTeams ? userTeams.map(t => t.id) : []}
             getOptionLabel={option => {
-              const team = userTeams.find(t => t.id === option)
+              const team = userTeams?.find(t => t.id === option)
               return team?.name ? team.name : ''
             }}
             value={taskTemp?.parent}
@@ -228,9 +231,9 @@ const TaskForm = ({ taskEdit, open, handleClose }: ITaskFormModalProps) => {
             // freeSolo
             disabled={taskTemp?.parent ? false : true}
             value={taskTemp?.assignedTo}
-            options={tempMembers.map(m => m.uid)}
+            options={tempMembers ? tempMembers.map(m => m.uid) : []}
             getOptionLabel={option => {
-              const member = tempMembers.find(m => m.uid === option)
+              const member = tempMembers?.find(m => m.uid === option)
               return member?.userName ? member.userName : ''
             }}
             onChange={(e, newValue) =>
@@ -240,8 +243,8 @@ const TaskForm = ({ taskEdit, open, handleClose }: ITaskFormModalProps) => {
               <TextField
                 {...params}
                 value={taskTemp?.assignedTo}
-                error={Boolean(errors?.asignee)}
-                helperText={errors?.asignee}
+                error={Boolean(errors?.assignedTo)}
+                helperText={errors?.assignedTo}
                 label='Asignee'
                 variant='outlined'
                 size='small'

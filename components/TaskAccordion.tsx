@@ -12,7 +12,7 @@ import moment from 'moment'
 import { Avatar, Box, IconButton, Typography, useTheme } from '@mui/material'
 import { styled } from '@mui/system'
 import { ITask, IUser } from '../util/types'
-import { useTaskListCtx } from '../context/TaskListCtx'
+import { useActionsCtx } from '../context/ActionsCtx'
 import { useAuthCtx } from '../context/AuthCtx'
 import { useUserTeams } from '../hooks/teams'
 import { useEffect, useState } from 'react'
@@ -32,7 +32,7 @@ const TaskAccordion = ({ task }: TaskAccordionProps) => {
     setTaskFormModal,
     setTaskDelModal,
     setTaskEdit,
-  } = useTaskListCtx()
+  } = useActionsCtx()
   const userTeamsData = useUserTeams(user!.uid)
   const [passedTask, setPassedTask] = useState<ITask | null>(null)
 
