@@ -8,7 +8,7 @@ import {
   Typography,
 } from '@mui/material'
 import { useEffect, useState } from 'react'
-import { ITeam, ITeamWithId, IUser, teamDefault } from '../util/types'
+import { ITeam,  IUser, teamDefault } from '../util/types'
 import {
   collection,
   documentId,
@@ -18,7 +18,8 @@ import {
 } from 'firebase/firestore'
 import { db } from '../firebase/config'
 import { CancelRounded, CheckCircleRounded } from '@mui/icons-material'
-import { createTeam, editTeam } from '../firebase/teams'
+import editTeam from '../firebase/editTeam'
+import createTeam from '../firebase/createTeam'
 import { useAuthCtx } from '../context/AuthCtx'
 import { useAlertCtx } from '../context/AlertCtx'
 

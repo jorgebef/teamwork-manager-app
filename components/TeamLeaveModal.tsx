@@ -1,22 +1,10 @@
-import {
-  Box,
-  Modal,
-  Button,
-  AlertColor,
-  Typography,
-  useTheme,
-} from '@mui/material'
+import { Box, Modal, Button, Typography } from '@mui/material'
 import React from 'react'
 import { ITeam } from '../util/types'
-import { deleteTask } from '../firebase/task'
 import { useAlertCtx } from '../context/AlertCtx'
-import {
-  CancelRounded,
-  DeleteRounded,
-  ExitToAppRounded,
-} from '@mui/icons-material'
+import { CancelRounded, ExitToAppRounded } from '@mui/icons-material'
 import { useAuthCtx } from '../context/AuthCtx'
-import { leaveTeam } from '../firebase/teams'
+import leaveTeam from '../firebase/leaveTeam'
 
 interface TeamLeaveModalProps {
   open: boolean
