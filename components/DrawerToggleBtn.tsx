@@ -3,7 +3,6 @@ import MenuIcon from '@mui/icons-material/Menu'
 import { useAuthCtx } from '../context/AuthCtx'
 import toggleDrawer from '../util/toggleDrawer'
 import { CloseRounded } from '@mui/icons-material'
-import { useRouter } from 'next/router'
 
 const DrawerToggleBtn = () => {
   const {  user, openDrawer, setOpenDrawer } = useAuthCtx()

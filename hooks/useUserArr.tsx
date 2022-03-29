@@ -9,16 +9,17 @@ import { useEffect, useState } from 'react'
 import { db } from '../firebase/config'
 import { IUser } from '../util/types'
 
-const useUser = (userId: string | undefined) => {
-  const [userData, setUserData] = useState<IUser>({} as IUser)
+const useUserArr = (uidArr: string[] | null) => {
+  const [userData, setUserData] = useState<IUser[]>([])
 
   useEffect(() => {
-    if (!userId) return
-    const userCollectionRef = collection(db, 'users')
-    const qUser = query(userCollectionRef, where(documentId(), '==', userId))
-    const unsubscribe = onSnapshot(qUser, querySnapshot => {
-      querySnapshot.forEach(doc => {
-        setUserData({
+    if (!uidArr || uidArr.length == 0) return
+    const usersCollectionRef = collection(db, 'users')
+    const qUsers = query(usersCollectionRef, where(documentId(), 'in', uidArr))
+    const unsubscribe = onSnapshot(qUsers, querySnapshot => {
+      setUserData(
+        querySnapshot.docs.map<IUser>(doc => ({
+          ...doc.data(),
           uid: doc.data().uid,
           userName: doc.data().userName,
           email: doc.data().userName,
@@ -26,13 +27,13 @@ const useUser = (userId: string | undefined) => {
           teams: doc.data().teams,
           createdTasks: doc.data().createdTasks,
           assignedTasks: doc.data().assignedTasks,
-        })
-      })
+        }))
+      )
     })
     return unsubscribe
-  }, [userId])
+  }, [uidArr])
 
   return userData
 }
 
-export default useUser
+export default useUserArr

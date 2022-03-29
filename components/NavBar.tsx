@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import {
   AppBar,
   Avatar,
   Box,
   Container,
-  Divider,
   IconButton,
   ListItemIcon,
   Menu,
@@ -20,13 +19,11 @@ import Image from 'next/image'
 import SignInBtn from './SignInBtn'
 import DrawerToggleBtn from './DrawerToggleBtn'
 import { useAuthCtx } from './../context/AuthCtx'
-import { useRouter } from 'next/router'
 import profile3 from '../public/profile3.jpg'
 
 const NavBar: React.FC = () => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
   const { user, setUser, logout } = useAuthCtx()
-  const router = useRouter()
   const theme = useTheme()
 
   // ----------------- LOCAL USER

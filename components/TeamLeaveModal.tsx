@@ -1,22 +1,14 @@
-import {
-  Box,
-  Modal,
-  Button,
-  AlertColor,
-  Typography,
-  useTheme,
-} from '@mui/material'
+import { Box, Modal, Button, Typography } from '@mui/material'
 import React from 'react'
-import { ITeamWithId, TaskWithId } from '../util/types'
-import { deleteTask } from '../firebase/task'
+import { ITeam } from '../util/types'
 import { useAlertCtx } from '../context/AlertCtx'
-import { CancelRounded, DeleteRounded, ExitToAppRounded } from '@mui/icons-material'
+import { CancelRounded, ExitToAppRounded } from '@mui/icons-material'
 import { useAuthCtx } from '../context/AuthCtx'
-import { leaveTeam } from '../firebase/teams'
+import leaveTeam from '../firebase/leaveTeam'
 
 interface TeamLeaveModalProps {
   open: boolean
-  teamEdit: ITeamWithId | null
+  teamEdit: ITeam | null
   handleClose: (e: React.SyntheticEvent, reason?: string) => void
 }
 
@@ -29,7 +21,7 @@ const TeamLeaveModal = ({
   const { user } = useAuthCtx()
 
   const handleLeaveTeam = async (
-    team: ITeamWithId | null,
+    team: ITeam | null,
     e: React.SyntheticEvent
   ) => {
     e.stopPropagation()
