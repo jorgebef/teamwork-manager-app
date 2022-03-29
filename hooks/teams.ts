@@ -24,6 +24,7 @@ export const useTeam = (teamId: string | null) => {
           name: doc.data().name,
           members: doc.data().members,
           projects: doc.data().projects,
+          admins: doc.data().admins,
           description: doc.data().description,
         })
       })
@@ -48,6 +49,7 @@ export const useTeamArr = (teamArr: string[]) => {
           name: doc.data().name,
           description: doc.data().description,
           members: doc.data().members,
+          admins: doc.data().admins,
           projects: doc.data().projects,
         }))
       )
@@ -75,6 +77,7 @@ export const useUserTeams = (uid: string) => {
           name: doc.data().name,
           description: doc.data().description,
           members: doc.data().members,
+          admins: doc.data().admins,
           projects: doc.data().projects,
         }))
       )

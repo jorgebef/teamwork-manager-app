@@ -10,54 +10,44 @@ import {
   useTheme,
   Toolbar,
   Typography,
-  Badge,
-  Chip,
 } from '@mui/material'
-import {
-  InboxRounded,
-  MailRounded,
-  GroupsRounded,
-  FolderRounded,
-  AssignmentRounded,
-} from '@mui/icons-material'
+import { GroupsRounded, AssignmentRounded } from '@mui/icons-material'
 import toggleDrawer from '../util/toggleDrawer'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React from 'react'
 import { useAuthCtx } from '../context/AuthCtx'
-import { useTeamArr, useUserTeams } from '../hooks/teams'
-import { useUser } from '../hooks/users'
+import { useUserTeams } from '../hooks/teams'
 
-type LinkListItemT = {
-  title: string
-  path: string
-  icon: React.ReactElement
-}
+// type LinkListItemT = {
+//   title: string
+//   path: string
+//   icon: React.ReactElement
+// }
 
-const linkList: LinkListItemT[] = [
-  {
-    title: 'Teams',
-    path: '/teams',
-    icon: <GroupsRounded />,
-  },
-  // {
-  //   title: 'Projects',
-  //   path: '/projects',
-  //   icon: <FolderRounded />,
-  // },
-  {
-    title: 'Assigned tasks',
-    path: '/tasks',
-    icon: <AssignmentRounded />,
-  },
-]
+// const linkList: LinkListItemT[] = [
+//   {
+//     title: 'Teams',
+//     path: '/teams',
+//     icon: <GroupsRounded />,
+//   },
+//   // {
+//   //   title: 'Projects',
+//   //   path: '/projects',
+//   //   icon: <FolderRounded />,
+//   // },
+//   {
+//     title: 'Assigned tasks',
+//     path: '/tasks',
+//     icon: <AssignmentRounded />,
+//   },
+// ]
 
 const DrawerList = () => {
   const router = useRouter()
   const theme = useTheme()
   const { user } = useAuthCtx()
 
-  const userData = useUser(user!.uid)
   const userTeams = useUserTeams(user!.uid)
 
   return (

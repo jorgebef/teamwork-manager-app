@@ -1,11 +1,4 @@
-import {
-  Box,
-  Modal,
-  Button,
-  AlertColor,
-  Typography,
-  useTheme,
-} from '@mui/material'
+import { Box, Modal, Button, Typography } from '@mui/material'
 import React from 'react'
 import { ITask } from '../util/types'
 import { deleteTask } from '../firebase/task'
@@ -27,7 +20,7 @@ const TaskDelModal = ({ open, taskEdit, handleClose }: ITaskDelModalProps) => {
     e.stopPropagation()
     if (!task || !user) return
     handleClose(e)
-    const deleteRes = await deleteTask(task.id!, user.uid).then(r => r)
+    const deleteRes = await deleteTask(task.id!).then(r => r)
     // alert(`Delete ${docRef.id} successfully`)
     alertShow(`Successfully deleted task id ${deleteRes?.taskId} !!`, 'error')
   }

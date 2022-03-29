@@ -1,6 +1,6 @@
-import { Box, Button, Container, Typography, useTheme } from '@mui/material'
+import { Box, Button, Container, Typography } from '@mui/material'
 import { useActionsCtx } from '../context/ActionsCtx'
-import { ITeam, IUser } from '../util/types'
+import { ITeam } from '../util/types'
 import TeamCard from './TeamCard'
 import TeamFormModal from './TeamFormModal'
 import TeamLeaveModal from './TeamLeaveModal'
