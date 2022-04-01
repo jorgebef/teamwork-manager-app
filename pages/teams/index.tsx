@@ -6,7 +6,7 @@ import { useUserTeams } from '../../hooks/teams'
 
 const Teams: NextPage = () => {
   const { user } = useAuthCtx()
-  const teams = useUserTeams(user!.uid)
+  const teams = useUserTeams(user?.uid)
 
   return (
     <>

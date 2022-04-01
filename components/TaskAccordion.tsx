@@ -33,7 +33,7 @@ const TaskAccordion = ({ task }: TaskAccordionProps) => {
     setTaskDelModal,
     setTaskEdit,
   } = useActionsCtx()
-  const userTeamsData = useUserTeams(user!.uid)
+  const userTeamsData = useUserTeams(user?.uid)
   const [passedTask, setPassedTask] = useState<ITask | null>(null)
 
   useEffect(() => {
