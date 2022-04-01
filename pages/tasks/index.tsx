@@ -1,5 +1,4 @@
 import TaskList from '../../components/TaskList'
-import { Typography } from '@mui/material'
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next'
 import { useUserTasks } from '../../hooks/tasks'
 import nookies from 'nookies'
@@ -10,11 +9,7 @@ const Tasks = (
 ) => {
   const tasks = useUserTasks(props.uid!)
 
-  return !tasks ? (
-    <Typography>LOADING ...</Typography>
-  ) : (
-    <TaskList tasks={tasks} />
-  )
+  return tasks && <TaskList tasks={tasks} />
 }
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {

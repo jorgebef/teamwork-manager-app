@@ -48,10 +48,10 @@ const TaskList = ({ tasks }: ITaskListProps) => {
             flexDirection: 'column',
           }}
         >
-          {tasks.length == 0 && <Typography>NO TASKS</Typography>}
           {tasks.map((task: ITask) => {
             return <TaskAccordion key={task.id} task={task} />
           })}
+          {tasks.length == 0 && <Typography>NO TASKS</Typography>}
         </Box>
         <Button
           variant='contained'
