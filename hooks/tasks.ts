@@ -46,7 +46,6 @@ export const useTask = (taskId: string | undefined) => {
   return taskData
 }
 
-
 export const useTeamTasks = (teamId: string | undefined) => {
   const [tasks, setTasks] = useState<ITask[] | null>(null)
 

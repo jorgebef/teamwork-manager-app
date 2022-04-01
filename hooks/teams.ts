@@ -60,10 +60,11 @@ export const useTeamArr = (teamArr: string[]) => {
   return teamsData
 }
 
-export const useUserTeams = (uid: string) => {
+export const useUserTeams = (uid: string | undefined) => {
   const [teams, setTeams] = useState<ITeam[] | null>(null)
 
   useEffect(() => {
+    if (!uid) return
     const teamsCollectionRef = collection(db, 'teams')
     const qTeams = query(
       teamsCollectionRef,

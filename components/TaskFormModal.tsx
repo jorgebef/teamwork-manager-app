@@ -20,8 +20,7 @@ import moment from 'moment'
 import { useAlertCtx } from '../context/AlertCtx'
 import { createTask, editTask } from '../firebase/task'
 import { useAuthCtx } from '../context/AuthCtx'
-import { useTeam, useUserTeams } from '../hooks/teams'
-import useUserArr from '../hooks/useUserArr'
+import {  useUserTeams } from '../hooks/teams'
 import { useTeamUsers } from '../hooks/users'
 
 interface ITaskFormModalProps {
@@ -43,7 +42,7 @@ const TaskForm = ({ taskEdit, open, handleClose }: ITaskFormModalProps) => {
   const [errors, setErrors] = useState<IFormErrors | null>(null)
   const { alertShow } = useAlertCtx()
   const { user } = useAuthCtx()
-  const userTeams = useUserTeams(user!.uid)
+  const userTeams = useUserTeams(user?.uid)
   const tempMembers = useTeamUsers(taskTemp.parent)
 
   // // Capture taskEdit, which will be different for each task for which

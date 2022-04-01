@@ -1,5 +1,4 @@
 import TaskList from '../../components/TaskList'
-import { useAuthCtx } from '../../context/AuthCtx'
 import { Typography } from '@mui/material'
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next'
 import { useUserTasks } from '../../hooks/tasks'
@@ -9,7 +8,6 @@ import { firebaseAdmin } from '../../firebase/admin'
 const Tasks = (
   props: InferGetServerSidePropsType<typeof getServerSideProps>
 ) => {
-  const { user } = useAuthCtx()
   const tasks = useUserTasks(props.uid!)
 
   return !tasks ? (
