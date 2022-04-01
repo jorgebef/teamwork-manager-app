@@ -3,7 +3,6 @@ import {
   documentId,
   onSnapshot,
   query,
-  QuerySnapshot,
   where,
 } from 'firebase/firestore'
 import { useEffect, useState } from 'react'
@@ -34,36 +33,11 @@ export const useTeam = (teamId: string | null) => {
   return teamData
 }
 
-export const useTeamArr = (teamArr: string[]) => {
-  const [teamsData, setTeamsData] = useState<ITeam[]>([])
-
-  useEffect(() => {
-    if (!teamArr || teamArr.length == 0) return
-    const teamsCollectionRef = collection(db, 'teams')
-    const qTeams = query(teamsCollectionRef, where(documentId(), 'in', teamArr))
-    const unsubscribe = onSnapshot(qTeams, querySnapshot => {
-      setTeamsData(
-        querySnapshot.docs.map<ITeam>(doc => ({
-          ...doc.data(),
-          id: doc.id,
-          name: doc.data().name,
-          description: doc.data().description,
-          members: doc.data().members,
-          admins: doc.data().admins,
-          projects: doc.data().projects,
-        }))
-      )
-    })
-    return unsubscribe
-  }, [teamArr])
-
-  return teamsData
-}
-
-export const useUserTeams = (uid: string) => {
+export const useUserTeams = (uid: string | undefined) => {
   const [teams, setTeams] = useState<ITeam[] | null>(null)
 
   useEffect(() => {
+    if (!uid) return
     const teamsCollectionRef = collection(db, 'teams')
     const qTeams = query(
       teamsCollectionRef,

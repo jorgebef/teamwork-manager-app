@@ -2,9 +2,7 @@ import Typography from '@mui/material/Typography'
 import { Box, Button, Container } from '@mui/material'
 import TaskForm from './TaskFormModal'
 import TaskDelModal from './TaskDelModal'
-import { useAuthCtx } from '../context/AuthCtx'
-import { IUser, ITask } from '../util/types'
-import { useUser } from '../hooks/users'
+import {  ITask } from '../util/types'
 import TaskAccordion from './TaskAccordion'
 import { useActionsCtx } from '../context/ActionsCtx'
 
@@ -22,10 +20,6 @@ const TaskList = ({ tasks }: ITaskListProps) => {
     taskEdit,
     setTaskEdit,
   } = useActionsCtx()
-
-  const { user } = useAuthCtx()
-
-  const userData: IUser = useUser(user!.uid)
 
   const handleCloseFormModal = (e: React.SyntheticEvent, reason?: string) => {
     // Here we handle the case were we click on the backdrop
@@ -54,13 +48,10 @@ const TaskList = ({ tasks }: ITaskListProps) => {
             flexDirection: 'column',
           }}
         >
-          {tasks?.length == 0 ? (
-            <Typography>NO TASKS</Typography>
-          ) : (
-            tasks.map((task: ITask) => {
-              return <TaskAccordion key={task.id} task={task} />
-            })
-          )}
+          {tasks.map((task: ITask) => {
+            return <TaskAccordion key={task.id} task={task} />
+          })}
+          {tasks.length == 0 && <Typography>NO TASKS</Typography>}
         </Box>
         <Button
           variant='contained'

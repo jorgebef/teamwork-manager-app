@@ -48,7 +48,7 @@ const DrawerList = () => {
   const theme = useTheme()
   const { user } = useAuthCtx()
 
-  const userTeams = useUserTeams(user!.uid)
+  const userTeams = useUserTeams(user?.uid)
 
   return (
     <>

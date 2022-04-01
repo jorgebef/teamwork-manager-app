@@ -1,3 +1,4 @@
+import nookies from 'nookies'
 import { createContext, useContext, useEffect, useState } from 'react'
 import {
   onAuthStateChanged,
@@ -7,9 +8,8 @@ import {
   signOut,
   signInWithPopup,
 } from 'firebase/auth'
-import { auth, googleProvider } from '../firebase/config'
+import { auth, db, googleProvider } from '../firebase/config'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
-import { db } from '../firebase/config'
 import { useRouter } from 'next/router'
 
 export interface IAuthCtx {
@@ -17,7 +17,7 @@ export interface IAuthCtx {
   setOpenDrawer: React.Dispatch<React.SetStateAction<boolean>>
   user: User | null
   setUser: React.Dispatch<React.SetStateAction<any>>
-  login: () => Promise<UserCredential>
+  loginAnon: () => Promise<UserCredential>
   logout: () => void
   // loginAnon: () => Promise<any>
   loginGoogle: () => void
@@ -30,7 +30,20 @@ export const AuthCtxProvider: React.FC = ({ children }) => {
   const [user, setUser] = useState<User | null>(null)
   const router = useRouter()
 
-  const login = async () => {
+  useEffect(() => {
+    return auth.onIdTokenChanged(async user => {
+      if (!user) {
+        setUser(null)
+        nookies.set(undefined, 'token', '', { path: '/' })
+      } else {
+        const token = await user.getIdToken()
+        setUser(user)
+        nookies.set(undefined, 'token', token, { path: '/' })
+      }
+    })
+  }, [])
+
+  const loginAnon = async () => {
     return await signInAnonymously(auth)
   }
 
@@ -59,7 +72,7 @@ export const AuthCtxProvider: React.FC = ({ children }) => {
   }
 
   const logout = async () => {
-    router.push('/')
+    await router.push('/')
     await signOut(auth)
     setUser(null)
   }
@@ -71,7 +84,7 @@ export const AuthCtxProvider: React.FC = ({ children }) => {
         setOpenDrawer,
         user,
         setUser,
-        login,
+        loginAnon,
         logout,
         loginGoogle,
       }}

@@ -46,7 +46,6 @@ export const useTask = (taskId: string | undefined) => {
   return taskData
 }
 
-
 export const useTeamTasks = (teamId: string | undefined) => {
   const [tasks, setTasks] = useState<ITask[] | null>(null)
 
@@ -63,8 +62,8 @@ export const useTeamTasks = (teamId: string | undefined) => {
 }
 
 export const useUserTasks = (uid: string) => {
-  const [createdTasks, setCreatedTasks] = useState<ITask[]>([])
-  const [assignedTasks, setAssignedTasks] = useState<ITask[]>([])
+  const [createdTasks, setCreatedTasks] = useState<ITask[] | null>(null)
+  const [assignedTasks, setAssignedTasks] = useState<ITask[] | null>(null)
   const [tasks, setTasks] = useState<ITask[] | null>(null)
 
   useEffect(() => {
@@ -80,15 +79,24 @@ export const useUserTasks = (uid: string) => {
   }, [uid])
 
   useEffect(() => {
-    const intersection = createdTasks.filter(cT =>
-      assignedTasks.find(aT => aT.id == cT.id)
+    const intersection = createdTasks?.filter(cT =>
+      assignedTasks?.find(aT => aT.id == cT.id)
     )
-    const difference = createdTasks
-      .filter(t => !assignedTasks.find(aT => aT.id == t.id))
-      .concat(
-        assignedTasks.filter(aT => !createdTasks.find(cT => cT.id == aT.id))
-      )
-    setTasks([...intersection, ...difference])
+    const difference =
+      createdTasks &&
+      createdTasks
+        .filter(t => !assignedTasks?.find(aT => aT.id == t.id))
+        .concat(
+          assignedTasks
+            ? assignedTasks.filter(
+                aT => !createdTasks.find(cT => cT.id == aT.id)
+              )
+            : []
+        )
+
+    if (!intersection && difference) setTasks([...difference])
+    if (intersection && !difference) setTasks([...intersection])
+    if (intersection && difference) setTasks([...intersection, ...difference])
   }, [createdTasks, assignedTasks])
   return tasks
 }
