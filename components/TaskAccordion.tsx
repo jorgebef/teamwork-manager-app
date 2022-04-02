@@ -7,9 +7,18 @@ import {
   EditRounded,
   FlagRounded,
   GroupsRounded,
+  RadioButtonUncheckedRounded,
+  RadioButtonCheckedRounded,
 } from '@mui/icons-material'
 import moment from 'moment'
-import { Avatar, Box, IconButton, Typography, useTheme } from '@mui/material'
+import {
+  Avatar,
+  Box,
+  Button,
+  IconButton,
+  Typography,
+  useTheme,
+} from '@mui/material'
 import { styled } from '@mui/system'
 import { ITask, IUser } from '../util/types'
 import { useActionsCtx } from '../context/ActionsCtx'
@@ -18,6 +27,8 @@ import { useUserTeams } from '../hooks/teams'
 import { useEffect, useState } from 'react'
 import { useTeamUsers } from '../hooks/users'
 import { useTask } from '../hooks/tasks'
+import { toggleCompleteTask } from '../firebase/task'
+import { useAlertCtx } from '../context/AlertCtx'
 
 interface TaskAccordionProps {
   task: ITask
@@ -34,6 +45,7 @@ const TaskAccordion = ({ task }: TaskAccordionProps) => {
     setTaskEdit,
   } = useActionsCtx()
   const userTeamsData = useUserTeams(user?.uid)
+  const { alertShow } = useAlertCtx()
   const [passedTask, setPassedTask] = useState<ITask | null>(null)
 
   useEffect(() => {
@@ -74,6 +86,15 @@ const TaskAccordion = ({ task }: TaskAccordionProps) => {
     setTaskFormModal(true)
   }
 
+  const handleToggleCompleted = async (
+    e: React.SyntheticEvent,
+    taskId: string
+  ) => {
+    e.stopPropagation()
+    const toggleTask = await toggleCompleteTask(taskId).then(r => r)
+    toggleTask && alertShow('Completed task!!', 'success')
+  }
+
   return (
     <Accordion
       key={task.id}
@@ -111,17 +132,33 @@ const TaskAccordion = ({ task }: TaskAccordionProps) => {
             justifyContent: 'space-between',
           }}
         >
-          <Typography
-            noWrap={expanded === task.id ? false : true}
-            fontSize={18}
-            fontWeight={500}
-            sx={{
-              maxWidth: { xs: 200, sm: 370, md: 500, lg: 800 },
-              width: '100%',
-            }}
-          >
-            {task.title}
-          </Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
+            <Button
+              sx={{ m: 0, p: 0 }}
+              color={task.completed ? 'inherit' : 'secondary'}
+              onClick={e => handleToggleCompleted(e, task.id!)}
+            >
+              {task.completed ? (
+                <RadioButtonCheckedRounded />
+              ) : (
+                <RadioButtonUncheckedRounded />
+              )}
+            </Button>
+            <Typography
+              noWrap={expanded === task.id ? false : true}
+              fontSize={18}
+              fontWeight={500}
+              sx={{
+                maxWidth: { xs: 200, sm: 370, md: 500, lg: 800 },
+                width: '100%',
+                color: task.completed
+                  ? theme.palette.text.disabled
+                  : theme.palette.text.primary,
+              }}
+            >
+              {task.title}
+            </Typography>
+          </Box>
 
           <Box
             sx={{

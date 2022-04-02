@@ -1,4 +1,4 @@
-import { Box, Button, Container, Typography } from '@mui/material'
+import { Box, Button, Typography } from '@mui/material'
 import { useActionsCtx } from '../context/ActionsCtx'
 import { ITeam } from '../util/types'
 import TeamCard from './TeamCard'
@@ -10,9 +10,6 @@ type TeamListProps = {
 }
 
 const TeamList = ({ teams }: TeamListProps) => {
-  // const [teamFormModal, setTeamFormModal] = useState<boolean>(false)
-  // const [teamLeaveModal, setTeamLeaveModal] = useState<boolean>(false)
-  // const [teamEdit, setTeamEdit] = useState<ITeam | null>(null)
   const {
     teamFormModal,
     setTeamFormModal,
@@ -37,7 +34,7 @@ const TeamList = ({ teams }: TeamListProps) => {
   }
 
   return (
-    <Container
+    <Box
       sx={{
         display: 'flex',
         flexDirection: 'column',
@@ -79,7 +76,7 @@ const TeamList = ({ teams }: TeamListProps) => {
         teamEdit={teamEdit}
         handleClose={handleCloseLeaveModal}
       />
-    </Container>
+    </Box>
   )
 }
 
