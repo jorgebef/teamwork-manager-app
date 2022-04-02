@@ -11,10 +11,8 @@ import {
 import { ITask } from '../util/types'
 import { db } from './config'
 
-export const createTask = async (task: ITask, uid: string) => {
+export const createTask = async (taskData: ITask, uid: string) => {
   const collectionRef = collection(db, 'tasks')
-  // const { ['id']: _, ...newTask }: TaskWithId = task
-  const { ...taskData }: ITask = task
   const taskDocRef = await addDoc(collectionRef, {
     ...taskData,
     createdAt: serverTimestamp(),
@@ -74,6 +72,15 @@ export const editTask = async (task: ITask) => {
     modifiedAt: serverTimestamp(),
   })
   return { taskDocRef, taskData }
+}
+
+export const toggleCompleteTask = async (taskid: string) => {
+  const taskDocRef = doc(db, 'tasks', taskid)
+  const taskDocSnap: DocumentData = await getDoc(taskDocRef)
+  const taskName: string = taskDocSnap.data().taskName
+  const newCompleted: boolean = !taskDocSnap.data().completed
+  await updateDoc(taskDocRef, 'completed', newCompleted)
+  return { taskName, newCompleted }
 }
 
 export const deleteTask = async (taskId: string) => {

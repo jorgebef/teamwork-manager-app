@@ -2,7 +2,7 @@ import Typography from '@mui/material/Typography'
 import { Box, Button, Container } from '@mui/material'
 import TaskForm from './TaskFormModal'
 import TaskDelModal from './TaskDelModal'
-import {  ITask } from '../util/types'
+import { ITask } from '../util/types'
 import TaskAccordion from './TaskAccordion'
 import { useActionsCtx } from '../context/ActionsCtx'
 
@@ -49,7 +49,12 @@ const TaskList = ({ tasks }: ITaskListProps) => {
           }}
         >
           {tasks.map((task: ITask) => {
-            return <TaskAccordion key={task.id} task={task} />
+            return (
+              !task.completed && <TaskAccordion key={task.id} task={task} />
+            )
+          })}
+          {tasks.map((task: ITask) => {
+            return task.completed && <TaskAccordion key={task.id} task={task} />
           })}
           {tasks.length == 0 && <Typography>NO TASKS</Typography>}
         </Box>
