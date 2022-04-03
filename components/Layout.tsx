@@ -22,12 +22,12 @@ const Layout = ({ children }: LayoutProps) => {
       >
         <CustomDrawer />
         <Container
+          maxWidth='lg'
           sx={{
             width: {
               xs: '100%',
               md: `calc(100% - ${theme.custom.drawer.width})`,
             },
-            maxWidth: theme.breakpoints.values.lg,
           }}
         >
           {children}

@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react'
 import { db } from '../firebase/config'
 import { ITeam } from '../util/types'
 
-export const useTeam = (teamId: string | null) => {
+export const useTeam = (teamId: string | undefined | null) => {
   const [teamData, setTeamData] = useState<ITeam>({} as ITeam)
 
   useEffect(() => {

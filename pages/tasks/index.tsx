@@ -3,13 +3,26 @@ import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next'
 import { useUserTasks } from '../../hooks/tasks'
 import nookies from 'nookies'
 import { firebaseAdmin } from '../../firebase/admin'
+import Head from 'next/head'
 
 const Tasks = (
   props: InferGetServerSidePropsType<typeof getServerSideProps>
 ) => {
   const tasks = useUserTasks(props.uid!)
 
-  return tasks && <TaskList tasks={tasks} />
+  return (
+    <>
+      <Head>
+        <title>Teamwork Manager - Tasks</title>
+        <meta
+          name='Teamwork Manager App'
+          content='Teamwork and task management app - Tasks page'
+        />
+        <link rel='icon' href='/favicon.ico' />
+      </Head>
+      {tasks && <TaskList tasks={tasks} />}
+    </>
+  )
 }
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {

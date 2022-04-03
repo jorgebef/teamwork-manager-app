@@ -3,13 +3,26 @@ import TeamList from '../../components/TeamList'
 import { useUserTeams } from '../../hooks/teams'
 import nookies from 'nookies'
 import { firebaseAdmin } from '../../firebase/admin'
+import Head from 'next/head'
 
 const Teams = (
   props: InferGetServerSidePropsType<typeof getServerSideProps>
 ) => {
   const userTeams = useUserTeams(props.uid!)
 
-  return userTeams && <TeamList teams={userTeams} />
+  return (
+    <>
+      <Head>
+        <title>Teamwork Manager - Teams</title>
+        <meta
+          name='Teamwork Manager App'
+          content='Teamwork and task management app - Teams page'
+        />
+        <link rel='icon' href='/favicon.ico' />
+      </Head>
+      {userTeams && <TeamList teams={userTeams} />}
+    </>
+  )
 }
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {

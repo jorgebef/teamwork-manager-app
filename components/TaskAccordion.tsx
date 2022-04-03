@@ -104,7 +104,9 @@ const TaskAccordion = ({ task }: TaskAccordionProps) => {
       sx={{
         backgroundColor:
           expanded === task.id
-            ? theme.palette.grey[200]
+            ? !task.completed
+              ? theme.palette.grey[200]
+              : theme.palette.grey[50]
             : theme.palette.grey[50],
       }}
     >
@@ -189,6 +191,9 @@ const TaskAccordion = ({ task }: TaskAccordionProps) => {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'flex-start',
+            color: task.completed
+              ? theme.palette.text.disabled
+              : theme.palette.text.primary,
           }}
         >
           <Typography fontWeight={400}>{task.description}</Typography>

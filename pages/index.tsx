@@ -10,7 +10,6 @@ import {
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import React from 'react'
-import profile2 from '../public/profile2.jpg'
 
 const Home: NextPage = () => {
   const theme = useTheme()
@@ -88,57 +87,6 @@ const Home: NextPage = () => {
       </main>
     </>
   )
-
-  // return (
-  //   <>
-  //     <Head>
-  //       <title>Teamwork Manager - Home</title>
-  //       <meta
-  //         name='description'
-  //         content='Team project and task management app'
-  //       />
-  //       <link rel='icon' href='/favicon.ico' />
-  //     </Head>
-  //     <main>
-  //         <Typography variant='h2' fontWeight={500}>
-  //           Team manager app
-  //         </Typography>
-  //         <Box
-  //           sx={{
-  //             display: 'flex',
-  //             gap: 2,
-  //           }}
-  //         >
-  //           <Card>
-  //             <CardMedia
-  //               component='img'
-  //               alt='kitty'
-  //               height={250}
-  //               src='https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2360&q=80'
-  //             />
-  //             <CardContent>
-  //               <Typography>
-  //                 This is a sample of what should be in the index page
-  //               </Typography>
-  //             </CardContent>
-  //           </Card>
-  //           <Card>
-  //             <CardMedia
-  //               component='img'
-  //               alt='kitty'
-  //               height={250}
-  //               src='https://images.unsplash.com/photo-1519052537078-e6302a4968d4?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=3540&q=80'
-  //             />
-  //             <CardContent>
-  //               <Typography>
-  //                 There is no such thing as too many cats on a website!!
-  //               </Typography>
-  //             </CardContent>
-  //           </Card>
-  //         </Box>
-  //     </main>
-  //   </>
-  // )
 }
 
 export default Home
