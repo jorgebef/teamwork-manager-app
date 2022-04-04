@@ -20,22 +20,12 @@ import SignInBtn from './SignInBtn'
 import DrawerToggleBtn from './DrawerToggleBtn'
 import { useAuthCtx } from './../context/AuthCtx'
 import profile3 from '../public/profile3.jpg'
+import logoSVG from '../public/logo.svg'
 
 const NavBar: React.FC = () => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
-  const { user, setUser, logout } = useAuthCtx()
+  const { user, logout } = useAuthCtx()
   const theme = useTheme()
-
-  // ----------------- LOCAL USER
-  // useEffect(() => {
-  //   if (!localAuth) return
-  //   router.push('/dashboard')
-  // }, [localAuth])
-
-  // useEffect(() => {
-  //   if (!user) return
-  //   router.push('/dashboard')
-  // }, [user])
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget)
@@ -47,7 +37,6 @@ const NavBar: React.FC = () => {
 
   const handleSignOut = () => {
     setAnchorElUser(null)
-    // setLocalAuth(false)
     logout()
   }
 
@@ -69,36 +58,27 @@ const NavBar: React.FC = () => {
             <DrawerToggleBtn />
 
             <Link href='/' passHref>
-              <Typography
-                variant='h6'
-                noWrap
-                component='div'
+              <Box
                 sx={{
-                  mr: 2,
                   cursor: 'pointer',
                   display: 'flex',
+                  maxWidth: '70%',
                 }}
               >
-                LOGO
-              </Typography>
+                <Image src={logoSVG} alt='logo' />
+              </Box>
             </Link>
           </Box>
 
-          {/* -------------------- LOCAL USER */}
-          {/* {localAuth ? ( */}
           {user ? (
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title='Account'>
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar
-                    // src={user.photoURL ? user.photoURL : undefined}
-                    sx={{ height: 50, width: 50 }}
-                  >
+                  <Avatar sx={{ height: 50, width: 50 }}>
                     <Image
                       alt={user.displayName ? user.displayName : undefined}
                       src={user.photoURL ? user.photoURL : profile3}
                       layout='fill'
-                      // src={profile3}
                       quality={20}
                     />
                   </Avatar>
@@ -128,12 +108,6 @@ const NavBar: React.FC = () => {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-                {/* <Link href='/dashboard' passHref> */}
-                {/*   <MenuItem key={'dashboard'} onClick={handleCloseUserMenu}> */}
-                {/*     <Avatar /> Dashboard */}
-                {/*   </MenuItem> */}
-                {/* </Link> */}
-                {/* <Divider /> */}
                 <MenuItem key={'signout'} onClick={handleSignOut}>
                   <ListItemIcon>
                     <Logout fontSize='small' color='error' />

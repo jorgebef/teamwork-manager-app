@@ -1,4 +1,4 @@
-import { Box, Container, Typography, useTheme } from '@mui/material'
+import { Box, Container, useTheme } from '@mui/material'
 import CustomDrawer from './CustomDrawer'
 import NavBar from './NavBar'
 import AlertCustom from './AlertCustom'
@@ -22,10 +22,10 @@ const Layout = ({ children }: LayoutProps) => {
       >
         <CustomDrawer />
         <Container
+          maxWidth='lg'
           sx={{
-            maxWidth: {
+            width: {
               xs: '100%',
-              // md: 'calc(100% - ' + theme.custom.drawer.width + ')',
               md: `calc(100% - ${theme.custom.drawer.width})`,
             },
           }}

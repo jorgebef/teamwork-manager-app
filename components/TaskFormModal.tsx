@@ -20,7 +20,7 @@ import moment from 'moment'
 import { useAlertCtx } from '../context/AlertCtx'
 import { createTask, editTask } from '../firebase/task'
 import { useAuthCtx } from '../context/AuthCtx'
-import {  useUserTeams } from '../hooks/teams'
+import { useUserTeams } from '../hooks/teams'
 import { useTeamUsers } from '../hooks/users'
 
 interface ITaskFormModalProps {
