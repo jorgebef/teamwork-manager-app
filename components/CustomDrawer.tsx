@@ -19,30 +19,6 @@ import React from 'react'
 import { useAuthCtx } from '../context/AuthCtx'
 import { useUserTeams } from '../hooks/teams'
 
-// type LinkListItemT = {
-//   title: string
-//   path: string
-//   icon: React.ReactElement
-// }
-
-// const linkList: LinkListItemT[] = [
-//   {
-//     title: 'Teams',
-//     path: '/teams',
-//     icon: <GroupsRounded />,
-//   },
-//   // {
-//   //   title: 'Projects',
-//   //   path: '/projects',
-//   //   icon: <FolderRounded />,
-//   // },
-//   {
-//     title: 'Assigned tasks',
-//     path: '/tasks',
-//     icon: <AssignmentRounded />,
-//   },
-// ]
-
 const DrawerList = () => {
   const router = useRouter()
   const theme = useTheme()
@@ -112,27 +88,6 @@ const DrawerList = () => {
           )
         })}
       </List>
-      {/* <List> */}
-      {/*   {linkList.map(({ title, path, icon }) => ( */}
-      {/*     <Link key={title} href={path} passHref> */}
-      {/*       <ListItem */}
-      {/*         sx={ */}
-      {/*           router.asPath === path */}
-      {/*             ? { */}
-      {/*                 backgroundColor: theme => theme.palette.grey[300], */}
-      {/*               } */}
-      {/*             : null */}
-      {/*         } */}
-      {/*         button */}
-      {/*         key={title} */}
-      {/*       > */}
-      {/*         <ListItemIcon>{icon}</ListItemIcon> */}
-      {/*         <ListItemText primary={title} /> */}
-      {/*       </ListItem> */}
-      {/*     </Link> */}
-      {/*   ))} */}
-      {/* </List> */}
-      {/* <Divider /> */}
     </>
   )
 }
@@ -189,7 +144,6 @@ const PermanentDrawer = () => {
 const CustomDrawer: React.FC = () => {
   const { user } = useAuthCtx()
 
-  // if (!localAuth) return null
   if (!user) return null
 
   return (

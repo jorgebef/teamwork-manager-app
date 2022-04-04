@@ -8,7 +8,7 @@ import Head from 'next/head'
 const Teams = (
   props: InferGetServerSidePropsType<typeof getServerSideProps>
 ) => {
-  const userTeams = useUserTeams(props.uid!)
+  const userTeams = useUserTeams(props.uid)
 
   return (
     <>
