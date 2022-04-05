@@ -28,7 +28,7 @@ const TaskFilter = ({ tasks, teamFilter, setTeamFilter }: TaskFilterProps) => {
   const teams = useUserTeams(user?.uid)
 
   const TeamFilter = () => {
-    const onTeamChange = (e: SelectChangeEvent<string>) => {
+    const onTeamChange = (e: SelectChangeEvent<string[]>) => {
       const newVal = e.target.value
       setTeamFilter(typeof newVal === 'string' ? newVal.split(',') : newVal)
     }
