@@ -1,13 +1,13 @@
 import Typography from '@mui/material/Typography'
 import { Box, Button, Container, Divider } from '@mui/material'
-import TaskForm from './TaskFormModal'
+import TaskFormModal from './TaskFormModal'
 import TaskDelModal from './TaskDelModal'
 import { ITask } from '../util/types'
 import TaskAccordion from './TaskAccordion'
 import { useActionsCtx } from '../context/ActionsCtx'
 import { CheckRounded } from '@mui/icons-material'
-import TaskFilter from './TaskFilter'
 import { useEffect, useState } from 'react'
+import { useFilterCtx } from '../context/FilterCtx'
 
 interface ITaskListProps {
   tasks: ITask[]
@@ -24,21 +24,20 @@ const TaskList = ({ tasks }: ITaskListProps) => {
     setTaskEdit,
   } = useActionsCtx()
 
-  const [teamFilter, setTeamFilter] = useState<string[]>([])
-  const [displayTasks, setDisplayTasks] = useState<ITask[] | null>(null)
   const [compTasks, setCompTasks] = useState<ITask[]>([] as ITask[])
   const [incompTasks, setIncompTasks] = useState<ITask[]>([] as ITask[])
+  const [displayTasks, setDisplayTasks] = useState<ITask[] | null>(null)
+  const { teamFilter } = useFilterCtx()
 
   useEffect(() => {
     const filteredTasks =
-      teamFilter.length !== 0
+      teamFilter?.length !== 0
         ? tasks.filter(task => teamFilter.includes(task.parent))
         : tasks
     setDisplayTasks(filteredTasks)
-  }, [tasks, teamFilter])
+  }, [tasks, teamFilter, setDisplayTasks])
 
   useEffect(() => {
-    console.log(displayTasks)
     const compTasks: ITask[] = [] as ITask[]
     const incompTasks: ITask[] = [] as ITask[]
     displayTasks?.map(t =>
@@ -75,11 +74,6 @@ const TaskList = ({ tasks }: ITaskListProps) => {
             flexDirection: 'column',
           }}
         >
-          <TaskFilter
-            tasks={tasks}
-            teamFilter={teamFilter}
-            setTeamFilter={setTeamFilter}
-          />
           {displayTasks?.length == 0 && <Typography>NO TASKS</Typography>}
           {incompTasks.map((task: ITask) => {
             return (
@@ -118,7 +112,7 @@ const TaskList = ({ tasks }: ITaskListProps) => {
         </Button>
       </Container>
 
-      <TaskForm
+      <TaskFormModal
         taskEdit={taskEdit}
         open={taskFormModal}
         handleClose={handleCloseFormModal}

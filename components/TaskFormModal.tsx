@@ -34,7 +34,7 @@ interface IFormErrors {
   assignedTo: string | null
 }
 
-const TaskForm = ({ taskEdit, open, handleClose }: ITaskFormModalProps) => {
+const TaskFormModal = ({ taskEdit, open, handleClose }: ITaskFormModalProps) => {
   const [taskTemp, setTaskTemp] = useState<ITask>({} as ITask)
   const [errors, setErrors] = useState<IFormErrors | null>(null)
   const { alertShow } = useAlertCtx()
@@ -273,4 +273,4 @@ const TaskForm = ({ taskEdit, open, handleClose }: ITaskFormModalProps) => {
   )
 }
 
-export default TaskForm
+export default TaskFormModal

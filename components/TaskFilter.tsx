@@ -11,21 +11,14 @@ import {
   Select,
   SelectChangeEvent,
 } from '@mui/material'
-import React, { useState } from 'react'
 import { useAuthCtx } from '../context/AuthCtx'
+import { useFilterCtx } from '../context/FilterCtx'
 import { useUserTeams } from '../hooks/teams'
-import { useUser } from '../hooks/users'
-import { ITask } from '../util/types'
 
-interface TaskFilterProps {
-  tasks: ITask[]
-  teamFilter: string[]
-  setTeamFilter: React.Dispatch<React.SetStateAction<string[]>>
-}
-
-const TaskFilter = ({ tasks, teamFilter, setTeamFilter }: TaskFilterProps) => {
+const TaskFilter = () => {
   const { user } = useAuthCtx()
   const teams = useUserTeams(user?.uid)
+  const { teamFilter, setTeamFilter } = useFilterCtx()
 
   const TeamFilter = () => {
     const onTeamChange = (e: SelectChangeEvent<string[]>) => {
