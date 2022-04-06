@@ -8,32 +8,27 @@ import {
   Typography,
 } from '@mui/material'
 import { useEffect, useState } from 'react'
-import { ITeam,  IUser, teamDefault } from '../util/types'
-import {
-  collection,
-  documentId,
-  onSnapshot,
-  query,
-  where,
-} from 'firebase/firestore'
+import { ITeam, IUser, teamDefault } from '../util/types'
+import { collection, onSnapshot, query } from 'firebase/firestore'
 import { db } from '../firebase/config'
 import { CancelRounded, CheckCircleRounded } from '@mui/icons-material'
 import editTeam from '../firebase/editTeam'
 import createTeam from '../firebase/createTeam'
 import { useAuthCtx } from '../context/AuthCtx'
 import { useAlertCtx } from '../context/AlertCtx'
+import { useTeamsCtx } from '../context/TeamsCtx'
+import { useTeamUsers } from '../hooks/users'
 
-interface ITeamFormModalProps {
-  teamEdit: ITeam | null
-  open: boolean
-  onClose: (e: React.SyntheticEvent, reason?: string) => void
-}
-
-const TeamFormModal = ({ teamEdit, open, onClose }: ITeamFormModalProps) => {
-  const [teamTemp, setTeamTemp] = useState<ITeam>({} as ITeam)
-  const [usersData, setUsersData] = useState<Partial<IUser>[]>([])
+const TeamFormModal = () => {
+  const { teamEdit, teamFormModal, handleCloseFormModal } = useTeamsCtx()
   const { alertShow } = useAlertCtx()
   const { user } = useAuthCtx()
+
+  const [teamTemp, setTeamTemp] = useState<ITeam>({} as ITeam)
+  const [usersData, setUsersData] = useState<Partial<IUser>[]>([])
+
+  // THE USERS CURRENTLY IN THE TEAM
+  const teamUsers = useTeamUsers(teamEdit?.id)
 
   useEffect(() => {
     if (!user) return
@@ -45,8 +40,9 @@ const TeamFormModal = ({ teamEdit, open, onClose }: ITeamFormModalProps) => {
       })
     else setTeamTemp(teamEdit)
 
-    // if (!user) return
     const userCollectionRef = collection(db, 'users')
+    // HERE I CAN CUSTOMIZE THE SEARCH IF I WISH TO DO SO
+    // MAYBE TO ONLY SEARCH FOR THE TYPED USER ON TOP OF THE EXISTING MEMBERS
     const qUser = query(userCollectionRef)
     const unsubscribe = onSnapshot(qUser, querySnapshot => {
       setUsersData(
@@ -108,13 +104,13 @@ const TeamFormModal = ({ teamEdit, open, onClose }: ITeamFormModalProps) => {
       alertShow(`Team ${submitRes?.teamData.name} edited successfully`, 'info')
     }
 
-    onClose(e)
+    handleCloseFormModal(e)
     setTeamTemp({} as ITeam)
   }
 
   return (
     <>
-      <Modal open={open} onClose={onClose}>
+      <Modal open={teamFormModal} onClose={handleCloseFormModal}>
         <Box
           component='form'
           noValidate
@@ -190,7 +186,7 @@ const TeamFormModal = ({ teamEdit, open, onClose }: ITeamFormModalProps) => {
               color='error'
               type='button'
               variant='contained'
-              onClick={onClose}
+              onClick={handleCloseFormModal}
               startIcon={<CancelRounded />}
             >
               Discard

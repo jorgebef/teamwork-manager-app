@@ -5,21 +5,17 @@ import { deleteTask } from '../firebase/task'
 import { useAlertCtx } from '../context/AlertCtx'
 import { CancelRounded, DeleteRounded } from '@mui/icons-material'
 import { useAuthCtx } from '../context/AuthCtx'
+import { useTasksCtx } from '../context/TasksCtx'
 
-interface ITaskDelModalProps {
-  open: boolean
-  taskEdit: ITask | null
-  handleClose: (e: React.SyntheticEvent, reason?: string) => void
-}
-
-const TaskDelModal = ({ open, taskEdit, handleClose }: ITaskDelModalProps) => {
+const TaskDelModal = () => {
   const { alertShow } = useAlertCtx()
   const { user } = useAuthCtx()
+  const { taskEdit, taskDelModal, handleCloseDelModal } = useTasksCtx()
 
   const handleDelete = async (task: ITask | null, e: React.SyntheticEvent) => {
     e.stopPropagation()
     if (!task || !user) return
-    handleClose(e)
+    handleCloseDelModal(e)
     const deleteRes = await deleteTask(task.id!).then(r => r)
     // alert(`Delete ${docRef.id} successfully`)
     alertShow(`Successfully deleted task id ${deleteRes?.taskId} !!`, 'error')
@@ -27,7 +23,7 @@ const TaskDelModal = ({ open, taskEdit, handleClose }: ITaskDelModalProps) => {
 
   return (
     <>
-      <Modal open={open} onClose={handleClose}>
+      <Modal open={taskDelModal} onClose={handleCloseDelModal}>
         <Box
           sx={{
             display: 'flex',
@@ -43,14 +39,15 @@ const TaskDelModal = ({ open, taskEdit, handleClose }: ITaskDelModalProps) => {
           }}
         >
           <Typography textAlign='center' variant='h6'>
-            Delete {taskEdit?.title}
+            Delete task:
+            <br /> &quot;{taskEdit?.title}&quot; ?
           </Typography>
           <Box sx={{ display: 'flex', justifyContent: 'space-evenly' }}>
             <Button
               color='primary'
               type='button'
               variant='contained'
-              onClick={handleClose}
+              onClick={handleCloseDelModal}
               startIcon={<CancelRounded />}
             >
               Cancel
