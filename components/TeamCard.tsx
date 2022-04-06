@@ -11,29 +11,19 @@ import {
 } from '@mui/material'
 import { ITeam, IUser } from '../util/types'
 import { useTeamUsers, useUser } from '../hooks/users'
-import { useActionsCtx } from '../context/ActionsCtx'
 import { useAuthCtx } from '../context/AuthCtx'
+import { useTeamsCtx } from '../context/TeamsCtx'
 
 interface TeamCardProps {
   team: ITeam
 }
 
 const TeamCard = ({ team }: TeamCardProps) => {
-  const { setTeamFormModal, setTeamLeaveModal, setTeamEdit } = useActionsCtx()
+  const { handleOpenLeaveModal, handleOpenEditModal } = useTeamsCtx()
   const theme = useTheme()
   const members = useTeamUsers(team.id)
   const { user } = useAuthCtx()
   const userData: IUser = useUser(user!.uid)
-
-  const handleOpenLeaveModal = (team: ITeam) => {
-    setTeamEdit(team)
-    setTeamLeaveModal(true)
-  }
-
-  const handleOpenEditModal = (team: ITeam) => {
-    setTeamEdit(team)
-    setTeamFormModal(true)
-  }
 
   return (
     <Card

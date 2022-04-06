@@ -4,6 +4,7 @@ import { useUserTasks } from '../../hooks/tasks'
 import nookies from 'nookies'
 import { firebaseAdmin } from '../../firebase/admin'
 import Head from 'next/head'
+import TaskFilter from '../../components/TaskFilter'
 
 const Tasks = (
   props: InferGetServerSidePropsType<typeof getServerSideProps>
@@ -20,7 +21,12 @@ const Tasks = (
         />
         <link rel='icon' href='/favicon.ico' />
       </Head>
-      {tasks && <TaskList tasks={tasks} />}
+      {tasks && (
+        <>
+          <TaskFilter />
+          <TaskList tasks={tasks} />
+        </>
+      )}
     </>
   )
 }

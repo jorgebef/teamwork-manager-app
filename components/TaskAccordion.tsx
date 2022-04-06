@@ -21,7 +21,7 @@ import {
 } from '@mui/material'
 import { styled } from '@mui/system'
 import { ITask, IUser } from '../util/types'
-import { useActionsCtx } from '../context/ActionsCtx'
+import { useTasksCtx } from '../context/TasksCtx'
 import { useAuthCtx } from '../context/AuthCtx'
 import { useUserTeams } from '../hooks/teams'
 import { useEffect, useState } from 'react'
@@ -40,12 +40,13 @@ const TaskAccordion = ({ task }: TaskAccordionProps) => {
   const {
     expanded,
     setExpanded,
-    setTaskFormModal,
-    setTaskDelModal,
-    setTaskEdit,
-  } = useActionsCtx()
+    handleExpandTask,
+    handleOpenEditModal,
+    handleOpenDelModal,
+  } = useTasksCtx()
   const userTeamsData = useUserTeams(user?.uid)
   const { alertShow } = useAlertCtx()
+
   const [passedTask, setPassedTask] = useState<ITask | null>(null)
 
   useEffect(() => {
@@ -62,29 +63,6 @@ const TaskAccordion = ({ task }: TaskAccordionProps) => {
     gap: theme.spacing(1),
     marginTop: theme.spacing(2),
   })
-
-  const handleExpandTask =
-    (panel: string) => (e: React.SyntheticEvent, isExpanded: boolean) => {
-      // Disable closing the Accordion by clicking the Sumary only when open
-      // force the user to use the closing arrow
-      // This way we can implement the MoreHorizRounded icon for editing and deleting
-      if (expanded === e.currentTarget.id) return
-      setExpanded(isExpanded ? panel : false)
-    }
-
-  const handleUnexpandTask = () => {
-    setExpanded(false)
-  }
-
-  const handleOpenDelModal = (task: ITask) => {
-    setTaskEdit(task)
-    setTaskDelModal(true)
-  }
-
-  const handleOpenEditModal = (task: ITask) => {
-    setTaskEdit(task)
-    setTaskFormModal(true)
-  }
 
   const handleToggleCompleted = async (
     e: React.SyntheticEvent,
@@ -113,7 +91,7 @@ const TaskAccordion = ({ task }: TaskAccordionProps) => {
       <AccordionSummary
         id={task.id}
         expandIcon={
-          <IconButton onClick={handleUnexpandTask}>
+          <IconButton onClick={() => setExpanded(false)}>
             <ExpandMoreRounded />
           </IconButton>
         }

@@ -6,10 +6,10 @@ export interface ITask {
   createdBy: string | undefined
   description: string
   assignedTo: string | null
-  parent: string | null
+  parent: string
   createdAt: number | FieldValue
   modifiedAt: number | FieldValue | null
-  dueDate: number | null
+  dueDate: number
   completed: boolean
 }
 
@@ -18,7 +18,7 @@ export const taskDefault: ITask = {
   createdBy: undefined,
   description: '',
   assignedTo: null,
-  parent: null,
+  parent: '',
   createdAt: Date.now(),
   modifiedAt: null,
   dueDate: Date.now(),

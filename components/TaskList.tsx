@@ -1,43 +1,43 @@
 import Typography from '@mui/material/Typography'
-import { Box, Button, Container } from '@mui/material'
-import TaskForm from './TaskFormModal'
+import { Box, Button, Container, Divider } from '@mui/material'
+import TaskFormModal from './TaskFormModal'
 import TaskDelModal from './TaskDelModal'
 import { ITask } from '../util/types'
 import TaskAccordion from './TaskAccordion'
-import { useActionsCtx } from '../context/ActionsCtx'
+import { useTasksCtx } from '../context/TasksCtx'
+import { CheckRounded } from '@mui/icons-material'
+import { useEffect, useState } from 'react'
+import { useFilterCtx } from '../context/FilterCtx'
 
 interface ITaskListProps {
   tasks: ITask[]
 }
 
 const TaskList = ({ tasks }: ITaskListProps) => {
-  const {
-    setExpanded,
-    taskFormModal,
-    setTaskFormModal,
-    taskDelModal,
-    setTaskDelModal,
-    taskEdit,
-    setTaskEdit,
-  } = useActionsCtx()
+  const { taskDelModal, taskEdit, handleOpenCreateModal } = useTasksCtx()
 
-  const handleCloseFormModal = (e: React.SyntheticEvent, reason?: string) => {
-    // Here we handle the case were we click on the backdrop
-    // by having a conditional prop "reason", we can use this
-    // function both in onClose and onClick
-    if (reason === 'backdropClick') return
-    setTaskFormModal(false)
-  }
+  const [compTasks, setCompTasks] = useState<ITask[]>([] as ITask[])
+  const [incompTasks, setIncompTasks] = useState<ITask[]>([] as ITask[])
+  const [displayTasks, setDisplayTasks] = useState<ITask[] | null>(null)
+  const { teamFilter } = useFilterCtx()
 
-  const handleCloseDelModal = (e: React.SyntheticEvent) => {
-    setTaskDelModal(false)
-  }
+  useEffect(() => {
+    const filteredTasks =
+      teamFilter?.length !== 0
+        ? tasks.filter(task => teamFilter.includes(task.parent))
+        : tasks
+    setDisplayTasks(filteredTasks)
+  }, [tasks, teamFilter, setDisplayTasks])
 
-  const handleOpenCreateModal = () => {
-    setExpanded(false)
-    setTaskEdit(null)
-    setTaskFormModal(true)
-  }
+  useEffect(() => {
+    const compTasks: ITask[] = [] as ITask[]
+    const incompTasks: ITask[] = [] as ITask[]
+    displayTasks?.map(t =>
+      t.completed ? compTasks.push(t) : incompTasks.push(t)
+    )
+    setCompTasks(compTasks)
+    setIncompTasks(incompTasks)
+  }, [displayTasks])
 
   return (
     <>
@@ -48,15 +48,34 @@ const TaskList = ({ tasks }: ITaskListProps) => {
             flexDirection: 'column',
           }}
         >
-          {tasks.map((task: ITask) => {
+          {displayTasks?.length == 0 && <Typography>NO TASKS</Typography>}
+          {incompTasks.map((task: ITask) => {
             return (
               !task.completed && <TaskAccordion key={task.id} task={task} />
             )
           })}
-          {tasks.map((task: ITask) => {
-            return task.completed && <TaskAccordion key={task.id} task={task} />
-          })}
-          {tasks.length == 0 && <Typography>NO TASKS</Typography>}
+          {compTasks.length > 0 && (
+            <>
+              <Divider sx={{ my: 3 }} />
+              <Box
+                color={t => t.palette.text.secondary}
+                sx={{
+                  display: 'flex',
+                  gap: 1,
+                  alignSelf: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <CheckRounded />
+                <Typography variant='h6'>Completed Tasks</Typography>
+              </Box>
+              {compTasks.map((task: ITask) => {
+                return (
+                  task.completed && <TaskAccordion key={task.id} task={task} />
+                )
+              })}
+            </>
+          )}
         </Box>
         <Button
           variant='contained'
@@ -67,17 +86,9 @@ const TaskList = ({ tasks }: ITaskListProps) => {
         </Button>
       </Container>
 
-      <TaskForm
-        taskEdit={taskEdit}
-        open={taskFormModal}
-        handleClose={handleCloseFormModal}
-      />
+      <TaskFormModal />
 
-      <TaskDelModal
-        open={taskDelModal}
-        taskEdit={taskEdit}
-        handleClose={handleCloseDelModal}
-      />
+      <TaskDelModal />
     </>
   )
 }

@@ -1,5 +1,5 @@
 import { Box, Button, Typography } from '@mui/material'
-import { useActionsCtx } from '../context/ActionsCtx'
+import { useTeamsCtx } from '../context/TeamsCtx'
 import { ITeam } from '../util/types'
 import TeamCard from './TeamCard'
 import TeamFormModal from './TeamFormModal'
@@ -10,28 +10,7 @@ type TeamListProps = {
 }
 
 const TeamList = ({ teams }: TeamListProps) => {
-  const {
-    teamFormModal,
-    setTeamFormModal,
-    teamLeaveModal,
-    setTeamLeaveModal,
-    teamEdit,
-    setTeamEdit,
-  } = useActionsCtx()
-
-  const handleOpenCreateModal = () => {
-    setTeamEdit(null)
-    setTeamFormModal(true)
-  }
-
-  const handleCloseFormModal = (e: React.SyntheticEvent, reason?: string) => {
-    if (reason === 'backdropClick') return
-    setTeamFormModal(false)
-  }
-
-  const handleCloseLeaveModal = (e: React.SyntheticEvent, reason?: string) => {
-    setTeamLeaveModal(false)
-  }
+  const { handleOpenCreateModal } = useTeamsCtx()
 
   return (
     <Box
@@ -65,17 +44,9 @@ const TeamList = ({ teams }: TeamListProps) => {
         Create Team
       </Button>
 
-      <TeamFormModal
-        teamEdit={teamEdit}
-        open={teamFormModal}
-        onClose={handleCloseFormModal}
-      />
+      <TeamFormModal />
 
-      <TeamLeaveModal
-        open={teamLeaveModal}
-        teamEdit={teamEdit}
-        handleClose={handleCloseLeaveModal}
-      />
+      <TeamLeaveModal />
     </Box>
   )
 }

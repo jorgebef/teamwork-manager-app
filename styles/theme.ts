@@ -1,5 +1,6 @@
 import { createTheme } from '@mui/material'
 import { red } from '@mui/material/colors'
+import { Shadows } from '@mui/material/styles/shadows'
 import { Theme } from '@mui/system'
 
 declare module '@mui/material/styles' {
@@ -21,6 +22,7 @@ declare module '@mui/material/styles' {
 }
 
 const theme: Theme = createTheme({
+  shadows: Array(25).fill('none') as Shadows,
   palette: {
     primary: {
       main: '#55acd6',

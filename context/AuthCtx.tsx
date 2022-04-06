@@ -1,7 +1,6 @@
 import nookies from 'nookies'
 import { createContext, useContext, useEffect, useState } from 'react'
 import {
-  onAuthStateChanged,
   signInAnonymously,
   UserCredential,
   User,

@@ -3,14 +3,11 @@ import {
   Box,
   Modal,
   Button,
-  // Typography,
   TextField,
-  // FormControl,
   Autocomplete,
   TextFieldProps,
 } from '@mui/material'
 import { ITask, taskDefault } from '../util/types'
-// import { ITask, IUser } from '../util/types'
 import { CancelRounded, CheckCircleRounded } from '@mui/icons-material'
 
 import DateAdapter from '@mui/lab/AdapterMoment'
@@ -22,12 +19,7 @@ import { createTask, editTask } from '../firebase/task'
 import { useAuthCtx } from '../context/AuthCtx'
 import { useUserTeams } from '../hooks/teams'
 import { useTeamUsers } from '../hooks/users'
-
-interface ITaskFormModalProps {
-  taskEdit: ITask | null
-  open: boolean
-  handleClose: (e: React.SyntheticEvent, reason?: string) => void
-}
+import { useTasksCtx } from '../context/TasksCtx'
 
 interface IFormErrors {
   title: string | null
@@ -37,11 +29,12 @@ interface IFormErrors {
   assignedTo: string | null
 }
 
-const TaskForm = ({ taskEdit, open, handleClose }: ITaskFormModalProps) => {
+const TaskFormModal = () => {
   const [taskTemp, setTaskTemp] = useState<ITask>({} as ITask)
   const [errors, setErrors] = useState<IFormErrors | null>(null)
   const { alertShow } = useAlertCtx()
   const { user } = useAuthCtx()
+  const { taskEdit, taskFormModal, handleCloseFormModal } = useTasksCtx()
   const userTeams = useUserTeams(user?.uid)
   const tempMembers = useTeamUsers(taskTemp.parent)
 
@@ -71,7 +64,7 @@ const TaskForm = ({ taskEdit, open, handleClose }: ITaskFormModalProps) => {
 
   const closeModal = (e: React.SyntheticEvent) => {
     setErrors(null)
-    handleClose(e)
+    handleCloseFormModal(e)
   }
 
   const handleAutoCompUpdate = (
@@ -125,7 +118,7 @@ const TaskForm = ({ taskEdit, open, handleClose }: ITaskFormModalProps) => {
         'info'
       )
     }
-    handleClose(e)
+    handleCloseFormModal(e)
     setTaskTemp({} as ITask)
   }
 
@@ -138,8 +131,8 @@ const TaskForm = ({ taskEdit, open, handleClose }: ITaskFormModalProps) => {
 
   return (
     <Modal
-      open={open}
-      onClose={handleClose}
+      open={taskFormModal}
+      onClose={handleCloseFormModal}
       aria-labelledby='child-modal-title'
       aria-describedby='child-modal-description'
     >
@@ -276,4 +269,4 @@ const TaskForm = ({ taskEdit, open, handleClose }: ITaskFormModalProps) => {
   )
 }
 
-export default TaskForm
+export default TaskFormModal

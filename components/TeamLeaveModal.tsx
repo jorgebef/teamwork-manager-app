@@ -5,20 +5,12 @@ import { useAlertCtx } from '../context/AlertCtx'
 import { CancelRounded, ExitToAppRounded } from '@mui/icons-material'
 import { useAuthCtx } from '../context/AuthCtx'
 import leaveTeam from '../firebase/leaveTeam'
+import { useTeamsCtx } from '../context/TeamsCtx'
 
-interface TeamLeaveModalProps {
-  open: boolean
-  teamEdit: ITeam | null
-  handleClose: (e: React.SyntheticEvent, reason?: string) => void
-}
-
-const TeamLeaveModal = ({
-  open,
-  teamEdit,
-  handleClose,
-}: TeamLeaveModalProps) => {
+const TeamLeaveModal = () => {
   const { alertShow } = useAlertCtx()
   const { user } = useAuthCtx()
+  const { teamEdit, teamLeaveModal, handleCloseLeaveModal } = useTeamsCtx()
 
   const handleLeaveTeam = async (
     team: ITeam | null,
@@ -26,15 +18,14 @@ const TeamLeaveModal = ({
   ) => {
     e.stopPropagation()
     if (!team || !user) return
-    handleClose(e)
+    handleCloseLeaveModal(e)
     const deleteRes = await leaveTeam(team, user.uid).then(r => r)
-    // alert(`Delete ${docRef.id} successfully`)
     alertShow(`Successfully left Team ${deleteRes?.teamData.name} !!`, 'error')
   }
 
   return (
     <>
-      <Modal open={open} onClose={handleClose}>
+      <Modal open={teamLeaveModal} onClose={handleCloseLeaveModal}>
         <Box
           sx={{
             display: 'flex',
@@ -57,7 +48,7 @@ const TeamLeaveModal = ({
               color='primary'
               type='button'
               variant='contained'
-              onClick={handleClose}
+              onClick={handleCloseLeaveModal}
               startIcon={<CancelRounded />}
             >
               Cancel

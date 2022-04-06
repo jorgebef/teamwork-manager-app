@@ -9,7 +9,9 @@ import createEmotionCache from '../util/createEmotionCache'
 import Layout from '../components/Layout'
 import { AuthCtxProvider } from '../context/AuthCtx'
 import { AlertCtxProvider } from '../context/AlertCtx'
-import { ActionsCtxProvider } from '../context/ActionsCtx'
+import { TasksCtxProvider } from '../context/TasksCtx'
+import { TeamsCtxProvider } from '../context/TeamsCtx'
+import { FilterCtxProvider } from '../context/FilterCtx'
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache()
@@ -30,13 +32,17 @@ export default function MyApp(props: MyAppProps) {
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
         <AuthCtxProvider>
-          <ActionsCtxProvider>
-            <AlertCtxProvider>
-              <Layout>
-                <Component {...pageProps} />
-              </Layout>
-            </AlertCtxProvider>
-          </ActionsCtxProvider>
+          <FilterCtxProvider>
+            <TasksCtxProvider>
+              <TeamsCtxProvider>
+                <AlertCtxProvider>
+                  <Layout>
+                    <Component {...pageProps} />
+                  </Layout>
+                </AlertCtxProvider>
+              </TeamsCtxProvider>
+            </TasksCtxProvider>
+          </FilterCtxProvider>
         </AuthCtxProvider>
       </ThemeProvider>
     </CacheProvider>
